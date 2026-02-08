@@ -55,7 +55,7 @@ class Program
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new()
         {
-            Headless = true
+            Headless = false  // Changed for manual selector discovery
         });
 
         var page = await browser.NewPageAsync();
@@ -70,6 +70,14 @@ class Program
             });
 
             Console.WriteLine("Page loaded - ready for manual selector discovery");
+            Console.WriteLine("Browser will stay open for 60 seconds.");
+            Console.WriteLine("Use this time to:");
+            Console.WriteLine("1. Manually login");
+            Console.WriteLine("2. Navigate to book list (note the clicks needed)");
+            Console.WriteLine("3. Inspect elements with F12 DevTools");
+            Console.WriteLine("4. Document selectors in docs/selectors.md");
+
+            await Task.Delay(60000); // Wait 60 seconds
 
             // TODO: Login implementation - need to inspect site for selectors
             // TODO: Navigation implementation - need to discover click paths
