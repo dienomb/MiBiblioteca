@@ -121,6 +121,12 @@ public class MadridLibraryScraper
             var titleText = (await item.Locator("h4.lector_boxTitle a span").TextContentAsync())?.Trim();
             var dueText = (await item.Locator(".js-lectorPresta_xsfdev").TextContentAsync())?.Trim();
 
+            // Remove trailing space and slash from title
+            if (!string.IsNullOrEmpty(titleText) && titleText.EndsWith(" /"))
+            {
+                titleText = titleText.Substring(0, titleText.Length - 2).Trim();
+            }
+
             books.Add(new Book
             {
                 Title = titleText ?? string.Empty,
