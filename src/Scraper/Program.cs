@@ -1,14 +1,135 @@
+﻿using Microsoft.Playwright;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text.Json;
 using Azure.Storage.Blobs;
 using Microsoft.Playwright;
 using Microsoft.Extensions.Configuration;
 
-// Data model
-record Book(string Title, string Author, DateTime FirstSeen);
-
-class Program
+public class MadridLibraryScraper
 {
-    static async Task Main(string[] args)
+    private static DateTime? ParseDueDate(string? rawText)
+    {
+        if (string.IsNullOrWhiteSpace(rawText))
+        {
+            return null;
+        }
+
+        var parts = rawText.Split(':', 2, StringSplitOptions.RemoveEmptyEntries);
+        var datePart = parts.Length > 1 ? parts[1].Trim() : rawText.Trim();
+        if (datePart.Length >= 10)
+        {
+            datePart = datePart.Substring(0, 10);
+        }
+
+        if (DateTime.TryParseExact(datePart, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var date))
+        {
+            return date;
+        }
+
+        return null;
+    }
+
+    private static async Task<IFrame?> FindLoginFrameAsync(IPage page, int timeoutMs)
+    {
+        var start = DateTime.UtcNow;
+        while ((DateTime.UtcNow - start).TotalMilliseconds < timeoutMs)
+        {
+            foreach (var frame in page.Frames)
+            {
+                try
+                {
+                    if (await frame.Locator("#abnopid, #leid, #lepass").CountAsync() > 0)
+                    {
+                        return frame;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            await page.WaitForTimeoutAsync(250);
+        }
+
+        return null;
+    }
+
+    public class Book
+    {
+        public string Title { get; set; }
+        public DateTime? DueDate { get; set; }
+    }
+
+    public static async Task<List<Book>> ScrapeBooks(string username, string password)
+    {
+        using var playwright = await Playwright.CreateAsync();
+        await using var browser = await playwright.Chromium.LaunchAsync(new()
+        {
+            Headless = false
+        });
+
+        await using var context = await browser.NewContextAsync(new()
+        {
+            ViewportSize = new() { Width = 1280, Height = 720 }
+        });
+        var page = await context.NewPageAsync();
+
+        await page.GotoAsync("https://gestiona3.madrid.org/biblio_publicas/", new()
+        {
+            WaitUntil = WaitUntilState.NetworkIdle
+        });
+
+        var loginButton = page.Locator("button.login_lectorConnect.js-evn-lector-connect").First;
+        await loginButton.ClickAsync(new() { Force = true });
+
+        var loginFrame = await FindLoginFrameAsync(page, 15000);
+        var loginScope = loginFrame ?? page.MainFrame;
+        await loginScope.WaitForSelectorAsync("#abnopid", new() { Timeout = 10000 });
+        await loginScope.WaitForSelectorAsync("#leid", new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await loginScope.WaitForSelectorAsync("#lepass", new() { State = WaitForSelectorState.Visible, Timeout = 10000 });
+
+        await loginScope.Locator("#leid").FillAsync(username);
+        await loginScope.Locator("#lepass").FillAsync(password);
+
+        await loginScope.ClickAsync("button:has-text('Conectar')");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        if (await page.Locator("#abnopid").CountAsync() > 0)
+        {
+            throw new Exception("Login failed");
+        }
+
+        var currentUrl = page.Url;
+        var lectorBaseUrl = currentUrl.Split(new[] { "/NT" }, StringSplitOptions.None)[0];
+        var lectorUrl = $"{lectorBaseUrl}/NT1?ACC=210#lector_PR";
+        await page.GotoAsync(lectorUrl, new()
+        {
+            WaitUntil = WaitUntilState.NetworkIdle
+        });
+
+        var bookItems = page.Locator("ol.lector_box.js-lector_box > li[id^='lector_box']");
+        var bookCount = await bookItems.CountAsync();
+        var books = new List<Book>(bookCount);
+
+        for (var i = 0; i < bookCount; i++)
+        {
+            var item = bookItems.Nth(i);
+            var titleText = (await item.Locator("h4.lector_boxTitle a span").TextContentAsync())?.Trim();
+            var dueText = (await item.Locator(".js-lectorPresta_xsfdev").TextContentAsync())?.Trim();
+
+            books.Add(new Book
+            {
+                Title = titleText ?? string.Empty,
+                DueDate = ParseDueDate(dueText)
+            });
+        }
+
+        return books;
+    }
+
+    public static async Task Main()
     {
         Console.WriteLine("Madrid Library Book Tracker");
 
@@ -31,128 +152,15 @@ class Program
             Environment.Exit(1);
         }
 
-        Console.WriteLine("Environment variables validated");
-
         // Scrape new books
         var scrapedBooks = await ScrapeBooks(username, password);
-        Console.WriteLine($"Scraped {scrapedBooks.Count} books");
 
-        // Download existing books
-        var existingBooks = await DownloadExistingBooks(connectionString);
-
-        // Merge and deduplicate
-        var allBooks = MergeBooks(existingBooks, scrapedBooks);
-
-        // Upload updated list
-        await UploadBooks(connectionString, allBooks);
-        Console.WriteLine($"Total books in storage: {allBooks.Count}");
-    }
-
-    static async Task<List<Book>> ScrapeBooks(string username, string password)
-    {
-        Console.WriteLine("Starting browser automation...");
-
-        using var playwright = await Playwright.CreateAsync();
-        await using var browser = await playwright.Chromium.LaunchAsync(new()
+        Console.WriteLine($"\nFound {scrapedBooks.Count} books:");
+        foreach (var book in scrapedBooks)
         {
-            Headless = false  // Changed for manual selector discovery
-        });
-
-        var page = await browser.NewPageAsync();
-
-        try
-        {
-            // Navigate to library website
-            Console.WriteLine("Navigating to library website...");
-            await page.GotoAsync("https://gestiona3.madrid.org/biblio_publicas/cgi-bin/abnetopac/OEh9ssKt9F6pBYEqmJlZsTHIVBY/NT1", new()
-            {
-                WaitUntil = WaitUntilState.NetworkIdle
-            });
-
-            Console.WriteLine("Page loaded - ready for manual selector discovery");
-            Console.WriteLine("Browser will stay open for 60 seconds.");
-            Console.WriteLine("Use this time to:");
-            Console.WriteLine("1. Manually login");
-            Console.WriteLine("2. Navigate to book list (note the clicks needed)");
-            Console.WriteLine("3. Inspect elements with F12 DevTools");
-            Console.WriteLine("4. Document selectors in docs/selectors.md");
-
-            await Task.Delay(60000); // Wait 60 seconds
-
-            // TODO: Login implementation - need to inspect site for selectors
-            // TODO: Navigation implementation - need to discover click paths
-            // TODO: Data extraction - need to discover book list structure
-
-            return new List<Book>();
-        }
-        finally
-        {
-            await page.CloseAsync();
-        }
-    }
-
-    static List<Book> MergeBooks(List<Book> existing, List<Book> scraped)
-    {
-        var bookDict = existing.ToDictionary(
-            b => (b.Title.Trim().ToLowerInvariant(), b.Author.Trim().ToLowerInvariant()),
-            b => b
-        );
-
-        foreach (var book in scraped)
-        {
-            var key = (book.Title.Trim().ToLowerInvariant(), book.Author.Trim().ToLowerInvariant());
-            if (!bookDict.ContainsKey(key))
-            {
-                bookDict[key] = book;
-            }
+            Console.WriteLine($"  {book.Title} due date {book.DueDate?.ToString("d") ?? "N/A"}");
         }
 
-        return bookDict.Values.OrderBy(b => b.FirstSeen).ToList();
-    }
-
-    static async Task<List<Book>> DownloadExistingBooks(string connectionString)
-    {
-        try
-        {
-            var blobClient = new BlobClient(connectionString, "books", "books.json");
-
-            if (!await blobClient.ExistsAsync())
-            {
-                Console.WriteLine("No existing books.json found, starting fresh");
-                return new List<Book>();
-            }
-
-            var response = await blobClient.DownloadAsync();
-            var books = await JsonSerializer.DeserializeAsync<List<Book>>(response.Value.Content);
-            Console.WriteLine($"Downloaded {books?.Count ?? 0} existing books");
-            return books ?? new List<Book>();
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error downloading books: {ex.Message}");
-            return new List<Book>();
-        }
-    }
-
-    static async Task UploadBooks(string connectionString, List<Book> books)
-    {
-        try
-        {
-            var blobClient = new BlobClient(connectionString, "books", "books.json");
-            var json = JsonSerializer.Serialize(books, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
-            await blobClient.UploadAsync(stream, overwrite: true);
-
-            Console.WriteLine($"Uploaded {books.Count} books to Azure Blob Storage");
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"Error uploading books: {ex.Message}");
-            throw;
-        }
+        Console.ReadLine();
     }
 }
