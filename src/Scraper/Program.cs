@@ -1,11 +1,9 @@
 ﻿using Microsoft.Playwright;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using System.Text.Json;
-using Azure.Storage.Blobs;
-using Microsoft.Playwright;
-using Microsoft.Extensions.Configuration;
 
 public class MadridLibraryScraper
 {
@@ -67,7 +65,7 @@ public class MadridLibraryScraper
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new()
         {
-            Headless = false
+            Headless = true
         });
 
         await using var context = await browser.NewContextAsync(new()
