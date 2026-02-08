@@ -1,8 +1,11 @@
 ﻿using Microsoft.Playwright;
 using Microsoft.Extensions.Configuration;
+using Azure.Storage.Blobs;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 public class MadridLibraryScraper
@@ -56,8 +59,9 @@ public class MadridLibraryScraper
 
     public class Book
     {
-        public string Title { get; set; }
+        public required string Title { get; set; }
         public DateTime? DueDate { get; set; }
+        public DateTime FirstSeen { get; set; }
     }
 
     public static async Task<List<Book>> ScrapeBooks(string username, string password)
@@ -120,11 +124,85 @@ public class MadridLibraryScraper
             books.Add(new Book
             {
                 Title = titleText ?? string.Empty,
-                DueDate = ParseDueDate(dueText)
+                DueDate = ParseDueDate(dueText),
+                FirstSeen = DateTime.UtcNow
             });
         }
 
         return books;
+    }
+
+    private static async Task<List<Book>> DownloadExistingBooks(string connectionString)
+    {
+        try
+        {
+            var blobClient = new BlobClient(connectionString, "books", "books.json");
+
+            if (!await blobClient.ExistsAsync())
+            {
+                Console.WriteLine("No existing books.json found, starting fresh");
+                return new List<Book>();
+            }
+
+            var response = await blobClient.DownloadAsync();
+            var books = await JsonSerializer.DeserializeAsync<List<Book>>(response.Value.Content);
+            Console.WriteLine($"Downloaded {books?.Count ?? 0} existing books from storage");
+            return books ?? new List<Book>();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error downloading books: {ex.Message}");
+            return new List<Book>();
+        }
+    }
+
+    private static async Task UploadBooks(string connectionString, List<Book> books)
+    {
+        try
+        {
+            var blobClient = new BlobClient(connectionString, "books", "books.json");
+            var json = JsonSerializer.Serialize(books, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+            await blobClient.UploadAsync(stream, overwrite: true);
+
+            Console.WriteLine($"Uploaded {books.Count} books to Azure Blob Storage");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error uploading books: {ex.Message}");
+            throw;
+        }
+    }
+
+    private static List<Book> MergeBooks(List<Book> existing, List<Book> scraped)
+    {
+        // Create dictionary keyed by normalized title only (deduplicate by title)
+        var bookDict = existing.ToDictionary(
+            b => b.Title.Trim().ToLowerInvariant(),
+            b => b
+        );
+
+        // Add new books or update due dates for existing ones
+        foreach (var book in scraped)
+        {
+            var key = book.Title.Trim().ToLowerInvariant();
+            if (bookDict.ContainsKey(key))
+            {
+                // Update due date for existing book, keep original FirstSeen
+                bookDict[key].DueDate = book.DueDate;
+            }
+            else
+            {
+                // Add new book
+                bookDict[key] = book;
+            }
+        }
+
+        return bookDict.Values.OrderBy(b => b.FirstSeen).ToList();
     }
 
     public static async Task Main()
@@ -151,14 +229,28 @@ public class MadridLibraryScraper
         }
 
         // Scrape new books
+        Console.WriteLine("\nScraping library website...");
         var scrapedBooks = await ScrapeBooks(username, password);
+        Console.WriteLine($"Scraped {scrapedBooks.Count} books from website");
 
-        Console.WriteLine($"\nFound {scrapedBooks.Count} books:");
-        foreach (var book in scrapedBooks)
+        // Download existing books from Azure
+        var existingBooks = await DownloadExistingBooks(connectionString);
+
+        // Merge and deduplicate by title
+        var allBooks = MergeBooks(existingBooks, scrapedBooks);
+        Console.WriteLine($"Total unique books (by title): {allBooks.Count}");
+
+        // Upload updated list to Azure
+        await UploadBooks(connectionString, allBooks);
+
+        Console.WriteLine("\n=== Book List ===");
+        foreach (var book in allBooks)
         {
-            Console.WriteLine($"  {book.Title} due date {book.DueDate?.ToString("d") ?? "N/A"}");
+            Console.WriteLine($"  {book.Title}");
+            Console.WriteLine($"    Due: {book.DueDate?.ToString("d") ?? "N/A"}");
+            Console.WriteLine($"    First seen: {book.FirstSeen:d}");
         }
 
-        Console.ReadLine();
+        Console.WriteLine("\nSync complete!");
     }
 }
