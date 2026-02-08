@@ -29,10 +29,11 @@ jobs:
         run: pwsh src/Scraper/bin/Release/net10.0/playwright.ps1 install chromium --with-deps
 
       - name: Run scraper
+        working-directory: src/Scraper
         env:
           LIBRARY_USERNAME: ${{ secrets.LIBRARY_USERNAME }}
           LIBRARY_PASSWORD: ${{ secrets.LIBRARY_PASSWORD }}
-        run: dotnet run --project src/Scraper/Scraper.csproj --configuration Release
+        run: dotnet run --configuration Release
 
       - name: Commit and push changes
         run: |
