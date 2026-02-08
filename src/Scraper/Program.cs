@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -166,7 +167,8 @@ public class MadridLibraryScraper
 
             var json = JsonSerializer.Serialize(books, new JsonSerializerOptions
             {
-                WriteIndented = true
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             });
 
             await File.WriteAllTextAsync(filePath, json);
