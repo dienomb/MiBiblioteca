@@ -1,6 +1,5 @@
 ﻿using Microsoft.Playwright;
 using Microsoft.Extensions.Configuration;
-using Azure.Storage.Blobs;
 using System.Text.Json;
 using System;
 using System.Collections.Generic;
@@ -132,48 +131,50 @@ public class MadridLibraryScraper
         return books;
     }
 
-    private static async Task<List<Book>> DownloadExistingBooks(string connectionString)
+    private static async Task<List<Book>> LoadExistingBooks(string filePath)
     {
         try
         {
-            var blobClient = new BlobClient(connectionString, "books", "books.json");
-
-            if (!await blobClient.ExistsAsync())
+            if (!File.Exists(filePath))
             {
                 Console.WriteLine("No existing books.json found, starting fresh");
                 return new List<Book>();
             }
 
-            var response = await blobClient.DownloadAsync();
-            var books = await JsonSerializer.DeserializeAsync<List<Book>>(response.Value.Content);
-            Console.WriteLine($"Downloaded {books?.Count ?? 0} existing books from storage");
+            var json = await File.ReadAllTextAsync(filePath);
+            var books = JsonSerializer.Deserialize<List<Book>>(json);
+            Console.WriteLine($"Loaded {books?.Count ?? 0} existing books from file");
             return books ?? new List<Book>();
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error downloading books: {ex.Message}");
+            Console.Error.WriteLine($"Error loading books: {ex.Message}");
             return new List<Book>();
         }
     }
 
-    private static async Task UploadBooks(string connectionString, List<Book> books)
+    private static async Task SaveBooks(string filePath, List<Book> books)
     {
         try
         {
-            var blobClient = new BlobClient(connectionString, "books", "books.json");
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             var json = JsonSerializer.Serialize(books, new JsonSerializerOptions
             {
                 WriteIndented = true
             });
 
-            using var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
-            await blobClient.UploadAsync(stream, overwrite: true);
-
-            Console.WriteLine($"Uploaded {books.Count} books to Azure Blob Storage");
+            await File.WriteAllTextAsync(filePath, json);
+            Console.WriteLine($"Saved {books.Count} books to {filePath}");
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Error uploading books: {ex.Message}");
+            Console.Error.WriteLine($"Error saving books: {ex.Message}");
             throw;
         }
     }
@@ -218,30 +219,32 @@ public class MadridLibraryScraper
 
         var username = config["LibraryUsername"] ?? Environment.GetEnvironmentVariable("LIBRARY_USERNAME");
         var password = config["LibraryPassword"] ?? Environment.GetEnvironmentVariable("LIBRARY_PASSWORD");
-        var connectionString = config["AzureStorageConnectionString"] ?? Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
 
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(connectionString))
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             Console.Error.WriteLine("ERROR: Missing required configuration");
-            Console.Error.WriteLine("Required: LibraryUsername, LibraryPassword, AzureStorageConnectionString");
-            Console.Error.WriteLine("Set via appsettings.json or environment variables (LIBRARY_USERNAME, LIBRARY_PASSWORD, AZURE_STORAGE_CONNECTION_STRING)");
+            Console.Error.WriteLine("Required: LibraryUsername, LibraryPassword");
+            Console.Error.WriteLine("Set via appsettings.json or environment variables (LIBRARY_USERNAME, LIBRARY_PASSWORD)");
             Environment.Exit(1);
         }
+
+        // Define data file path (relative to repository root)
+        var dataFilePath = Path.Combine("..", "..", "data", "books.json");
 
         // Scrape new books
         Console.WriteLine("\nScraping library website...");
         var scrapedBooks = await ScrapeBooks(username, password);
         Console.WriteLine($"Scraped {scrapedBooks.Count} books from website");
 
-        // Download existing books from Azure
-        var existingBooks = await DownloadExistingBooks(connectionString);
+        // Load existing books from file
+        var existingBooks = await LoadExistingBooks(dataFilePath);
 
         // Merge and deduplicate by title
         var allBooks = MergeBooks(existingBooks, scrapedBooks);
         Console.WriteLine($"Total unique books (by title): {allBooks.Count}");
 
-        // Upload updated list to Azure
-        await UploadBooks(connectionString, allBooks);
+        // Save updated list to file
+        await SaveBooks(dataFilePath, allBooks);
 
         Console.WriteLine("\n=== Book List ===");
         foreach (var book in allBooks)
