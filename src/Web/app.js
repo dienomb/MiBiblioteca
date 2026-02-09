@@ -37,11 +37,11 @@ function getStatusClass(daysUntil) {
 // Get status text based on due date
 function getStatusText(daysUntil) {
     if (daysUntil === null) return '';
-    if (daysUntil < 0) return `Vencido hace ${Math.abs(daysUntil)} días`;
+    if (daysUntil < 0) return `Vencido hace ${Math.abs(daysUntil)} dias`;
     if (daysUntil === 0) return 'Vence hoy';
-    if (daysUntil === 1) return 'Vence mañana';
-    if (daysUntil <= 3) return `Vence en ${daysUntil} días`;
-    return `Vence en ${daysUntil} días`;
+    if (daysUntil === 1) return 'Vence manana';
+    if (daysUntil <= 3) return `Vence en ${daysUntil} dias`;
+    return `Vence en ${daysUntil} dias`;
 }
 
 // Create book card HTML
@@ -54,12 +54,13 @@ function createBookCard(book) {
 
     const author = book.Author ? escapeHtml(book.Author) : null;
     const coleccion = book.Coleccion ? escapeHtml(book.Coleccion) : null;
-
     const imageUrl = book.ImageUrl ? escapeHtml(book.ImageUrl) : null;
 
     return `
         <div class="book-card ${statusClass}">
-            ${imageUrl ? `<img class="book-cover" src="${imageUrl}" alt="${escapeHtml(book.Title)}">` : ''}
+            ${imageUrl
+                ? `<img class="book-cover" src="${imageUrl}" alt="${escapeHtml(book.Title)}" onclick="openLightbox(this.src, this.alt)">`
+                : ''}
             <div class="book-info">
                 <h3 class="book-title">${escapeHtml(book.Title)}</h3>
                 ${author ? `<p class="book-author">✍️ ${author}</p>` : ''}
@@ -74,7 +75,7 @@ function createBookCard(book) {
                     </div>
                     <div class="book-meta-item">
                         <span>👁️</span>
-                        <span>Visto por primera vez: ${formattedFirstSeen}</span>
+                        <span>Visto: ${formattedFirstSeen}</span>
                     </div>
                 </div>
             </div>
@@ -87,6 +88,22 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Lightbox
+function openLightbox(src, alt) {
+    const lightbox = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImg');
+    img.src = src;
+    img.alt = alt || '';
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
 // Sort books by a given field
@@ -142,7 +159,7 @@ function renderBooks(books) {
         bookList.innerHTML = `
             <div class="empty-state">
                 <h3>📚 No se encontraron libros</h3>
-                <p>No hay libros que coincidan con tu búsqueda.</p>
+                <p>No hay libros que coincidan con tu busqueda.</p>
             </div>
         `;
         statsText.textContent = 'No se encontraron libros';
@@ -150,8 +167,6 @@ function renderBooks(books) {
     }
 
     // Count books by status
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
     let overdue = 0;
     let dueSoon = 0;
 
@@ -166,7 +181,7 @@ function renderBooks(books) {
     // Update stats
     let stats = `${books.length} libro${books.length !== 1 ? 's' : ''}`;
     if (overdue > 0) stats += ` · ${overdue} vencido${overdue !== 1 ? 's' : ''}`;
-    if (dueSoon > 0) stats += ` · ${dueSoon} próximo${dueSoon !== 1 ? 's' : ''} a vencer`;
+    if (dueSoon > 0) stats += ` · ${dueSoon} proximo${dueSoon !== 1 ? 's' : ''} a vencer`;
     statsText.textContent = stats;
 
     // Sort and render book cards
@@ -190,7 +205,7 @@ async function updateLastUpdateTime() {
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            document.getElementById('lastUpdate').textContent = `Última actualización: ${formatted}`;
+            document.getElementById('lastUpdate').textContent = `Ultima actualizacion: ${formatted}`;
         }
     } catch (error) {
         console.error('Error fetching last update time:', error);
@@ -218,7 +233,7 @@ async function loadBooks() {
         bookList.innerHTML = `
             <div class="error">
                 <h3>❌ Error al cargar los libros</h3>
-                <p>No se pudieron cargar los libros. Por favor, inténtalo de nuevo más tarde.</p>
+                <p>No se pudieron cargar los libros. Por favor, intentalo de nuevo mas tarde.</p>
                 <p><small>Error: ${error.message}</small></p>
             </div>
         `;
@@ -252,6 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             refresh();
         });
+    });
+
+    // Close lightbox with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
     });
 
     // Load books on page load

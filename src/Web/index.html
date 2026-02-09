@@ -4,33 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Biblioteca - Mis Libros Reservados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📚 Mi Biblioteca</h1>
-            <p class="subtitle">Biblioteca Pública de Madrid</p>
+            <div class="header-deco">
+                <span class="deco-book">📕</span>
+                <span class="deco-book">📗</span>
+                <span class="deco-book">📘</span>
+            </div>
+            <h1>Mi Biblioteca</h1>
+            <p class="subtitle">Biblioteca Publica de Madrid</p>
         </header>
 
         <main>
             <div class="search-section">
+                <span class="search-icon">🔍</span>
                 <input
                     type="text"
                     id="searchInput"
                     class="search-box"
-                    placeholder="Buscar por título, autor o colección..."
+                    placeholder="Buscar por titulo, autor o coleccion..."
                     autocomplete="off"
                 >
             </div>
 
             <div class="sort-section">
                 <span class="sort-label">Ordenar por:</span>
-                <button class="sort-btn active" data-sort="FirstSeen">Fecha<span class="sort-arrow"> &#9650;</span></button>
-                <button class="sort-btn" data-sort="Title">Título<span class="sort-arrow"></span></button>
-                <button class="sort-btn" data-sort="Author">Autor<span class="sort-arrow"></span></button>
-                <button class="sort-btn" data-sort="Coleccion">Colección<span class="sort-arrow"></span></button>
-                <button class="sort-btn" data-sort="DueDate">Vencimiento<span class="sort-arrow"></span></button>
+                <button class="sort-btn active" data-sort="FirstSeen">📅 Fecha<span class="sort-arrow"> &#9650;</span></button>
+                <button class="sort-btn" data-sort="Title">📝 Titulo<span class="sort-arrow"></span></button>
+                <button class="sort-btn" data-sort="Author">✍️ Autor<span class="sort-arrow"></span></button>
+                <button class="sort-btn" data-sort="Coleccion">📖 Coleccion<span class="sort-arrow"></span></button>
+                <button class="sort-btn" data-sort="DueDate">⏰ Vencimiento<span class="sort-arrow"></span></button>
             </div>
 
             <div class="stats-bar">
@@ -48,13 +57,19 @@
 
         <footer>
             <p>
-                Actualizado automáticamente cada domingo a las 8:00 AM
+                Actualizado automaticamente cada domingo a las 8:00 AM
                 <br>
                 <a href="https://github.com/dienomb/MiBiblioteca" target="_blank" rel="noopener">
-                    Ver código en GitHub
+                    Ver codigo en GitHub
                 </a>
             </p>
         </footer>
+    </div>
+
+    <!-- Image lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="closeLightbox()" aria-label="Cerrar">&times;</button>
+        <img id="lightboxImg" class="lightbox-img" src="" alt="">
     </div>
 
     <script src="app.js"></script>
