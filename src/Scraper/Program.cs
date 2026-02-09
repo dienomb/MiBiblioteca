@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 public class MadridLibraryScraper
@@ -67,7 +68,22 @@ public class MadridLibraryScraper
         public DateTime FirstSeen { get; set; }
     }
 
-    public static async Task<List<Book>> ScrapeBooks(string username, string password)
+    private static string Slugify(string text)
+    {
+        var slug = text.ToLowerInvariant().Trim();
+        slug = Regex.Replace(slug, @"[áàäâ]", "a");
+        slug = Regex.Replace(slug, @"[éèëê]", "e");
+        slug = Regex.Replace(slug, @"[íìïî]", "i");
+        slug = Regex.Replace(slug, @"[óòöô]", "o");
+        slug = Regex.Replace(slug, @"[úùüû]", "u");
+        slug = Regex.Replace(slug, @"[ñ]", "n");
+        slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+        slug = Regex.Replace(slug, @"[\s-]+", "-").Trim('-');
+        if (slug.Length > 60) slug = slug.Substring(0, 60).TrimEnd('-');
+        return slug;
+    }
+
+    public static async Task<List<Book>> ScrapeBooks(string username, string password, string coversDir)
     {
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new()
@@ -160,16 +176,33 @@ public class MadridLibraryScraper
                         coleccion = (await coleccionDd.First.TextContentAsync())?.Trim();
                     }
 
-                    // Get the book cover image URL
+                    // Download book cover image to local file
                     var img = page.Locator("div.doc_img img");
                     if (await img.CountAsync() > 0)
                     {
                         var src = await img.First.GetAttributeAsync("src");
                         if (!string.IsNullOrEmpty(src))
                         {
-                            imageUrl = src.StartsWith("http")
+                            var fullUrl = src.StartsWith("http")
                                 ? src
                                 : new Uri(new Uri(page.Url), src).ToString();
+                            try
+                            {
+                                var slug = Slugify(title);
+                                var fileName = $"{slug}.jpg";
+                                var response = await page.APIRequest.GetAsync(fullUrl);
+                                if (response.Ok)
+                                {
+                                    var imgBytes = await response.BodyAsync();
+                                    await File.WriteAllBytesAsync(Path.Combine(coversDir, fileName), imgBytes);
+                                    imageUrl = $"covers/{fileName}";
+                                    Console.WriteLine($"  Saved cover for '{title}'");
+                                }
+                            }
+                            catch (Exception imgEx)
+                            {
+                                Console.Error.WriteLine($"  Could not download cover for '{title}': {imgEx.Message}");
+                            }
                         }
                     }
                 }
@@ -305,10 +338,12 @@ public class MadridLibraryScraper
 
         // Define data file path (relative to repository root)
         var dataFilePath = Path.Combine("..", "..", "data", "books.json");
+        var coversDir = Path.Combine("..", "..", "data", "covers");
+        Directory.CreateDirectory(coversDir);
 
         // Scrape new books
         Console.WriteLine("\nScraping library website...");
-        var scrapedBooks = await ScrapeBooks(username, password);
+        var scrapedBooks = await ScrapeBooks(username, password, coversDir);
         Console.WriteLine($"Scraped {scrapedBooks.Count} books from website");
 
         // Load existing books from file

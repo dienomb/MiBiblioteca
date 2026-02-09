@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:dienomb.github.io)",
+      "WebFetch(domain:gestiona3.madrid.org)"
+    ]
+  }
+}
