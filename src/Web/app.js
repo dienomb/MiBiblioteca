@@ -55,22 +55,27 @@ function createBookCard(book) {
     const author = book.Author ? escapeHtml(book.Author) : null;
     const coleccion = book.Coleccion ? escapeHtml(book.Coleccion) : null;
 
+    const imageUrl = book.ImageUrl ? escapeHtml(book.ImageUrl) : null;
+
     return `
         <div class="book-card ${statusClass}">
-            <h3 class="book-title">${escapeHtml(book.Title)}</h3>
-            ${author ? `<p class="book-author">✍️ ${author}</p>` : ''}
-            ${coleccion ? `<p class="book-coleccion">📖 ${coleccion}</p>` : ''}
-            <div class="book-meta">
-                <div class="book-meta-item">
-                    <span>📅</span>
-                    <span class="due-date ${statusClass}">
-                        ${formattedDueDate}
-                        ${statusText ? `<br><small>${statusText}</small>` : ''}
-                    </span>
-                </div>
-                <div class="book-meta-item">
-                    <span>👁️</span>
-                    <span>Visto por primera vez: ${formattedFirstSeen}</span>
+            ${imageUrl ? `<img class="book-cover" src="${imageUrl}" alt="${escapeHtml(book.Title)}">` : ''}
+            <div class="book-info">
+                <h3 class="book-title">${escapeHtml(book.Title)}</h3>
+                ${author ? `<p class="book-author">✍️ ${author}</p>` : ''}
+                ${coleccion ? `<p class="book-coleccion">📖 ${coleccion}</p>` : ''}
+                <div class="book-meta">
+                    <div class="book-meta-item">
+                        <span>📅</span>
+                        <span class="due-date ${statusClass}">
+                            ${formattedDueDate}
+                            ${statusText ? `<br><small>${statusText}</small>` : ''}
+                        </span>
+                    </div>
+                    <div class="book-meta-item">
+                        <span>👁️</span>
+                        <span>Visto por primera vez: ${formattedFirstSeen}</span>
+                    </div>
                 </div>
             </div>
         </div>

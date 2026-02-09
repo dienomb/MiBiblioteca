@@ -146,6 +146,23 @@ header h1 {
     box-shadow: 0 2px 8px var(--shadow);
     transition: all 0.3s ease;
     border-left: 4px solid var(--primary-light);
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.book-cover {
+    width: 80px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.book-info {
+    flex: 1;
+    min-width: 0;
 }
 
 .book-card:hover {
@@ -272,6 +289,12 @@ footer a:hover {
 
     .book-card {
         padding: 1rem;
+        gap: 1rem;
+    }
+
+    .book-cover {
+        width: 60px;
+        height: 85px;
     }
 
     .book-title {

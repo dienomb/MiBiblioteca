@@ -62,6 +62,7 @@ public class MadridLibraryScraper
         public required string Title { get; set; }
         public string? Author { get; set; }
         public string? Coleccion { get; set; }
+        public string? ImageUrl { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime FirstSeen { get; set; }
     }
@@ -135,11 +136,12 @@ public class MadridLibraryScraper
             bookData.Add((titleText ?? string.Empty, ParseDueDate(dueText), href));
         }
 
-        // Second pass: visit each detail page to get author and coleccion
+        // Second pass: visit each detail page to get author, coleccion and image
         foreach (var (title, dueDate, href) in bookData)
         {
             string? author = null;
             string? coleccion = null;
+            string? imageUrl = null;
             if (!string.IsNullOrEmpty(href))
             {
                 try
@@ -157,6 +159,19 @@ public class MadridLibraryScraper
                     {
                         coleccion = (await coleccionDd.First.TextContentAsync())?.Trim();
                     }
+
+                    // Get the book cover image URL
+                    var img = page.Locator("div.doc_img img");
+                    if (await img.CountAsync() > 0)
+                    {
+                        var src = await img.First.GetAttributeAsync("src");
+                        if (!string.IsNullOrEmpty(src))
+                        {
+                            imageUrl = src.StartsWith("http")
+                                ? src
+                                : new Uri(new Uri(page.Url), src).ToString();
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -169,6 +184,7 @@ public class MadridLibraryScraper
                 Title = title,
                 Author = author,
                 Coleccion = coleccion,
+                ImageUrl = imageUrl,
                 DueDate = dueDate,
                 FirstSeen = DateTime.UtcNow
             });
@@ -249,6 +265,10 @@ public class MadridLibraryScraper
                 if (!string.IsNullOrEmpty(book.Coleccion))
                 {
                     bookDict[key].Coleccion = book.Coleccion;
+                }
+                if (!string.IsNullOrEmpty(book.ImageUrl))
+                {
+                    bookDict[key].ImageUrl = book.ImageUrl;
                 }
             }
             else
