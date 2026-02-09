@@ -19,9 +19,18 @@
                     type="text"
                     id="searchInput"
                     class="search-box"
-                    placeholder="Buscar por título..."
+                    placeholder="Buscar por título, autor o colección..."
                     autocomplete="off"
                 >
+            </div>
+
+            <div class="sort-section">
+                <span class="sort-label">Ordenar por:</span>
+                <button class="sort-btn active" data-sort="FirstSeen">Fecha<span class="sort-arrow"> &#9650;</span></button>
+                <button class="sort-btn" data-sort="Title">Título<span class="sort-arrow"></span></button>
+                <button class="sort-btn" data-sort="Author">Autor<span class="sort-arrow"></span></button>
+                <button class="sort-btn" data-sort="Coleccion">Colección<span class="sort-arrow"></span></button>
+                <button class="sort-btn" data-sort="DueDate">Vencimiento<span class="sort-arrow"></span></button>
             </div>
 
             <div class="stats-bar">

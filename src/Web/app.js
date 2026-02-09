@@ -1,6 +1,7 @@
 const DATA_URL = 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/books.json';
 
 let allBooks = [];
+let currentSort = { field: 'FirstSeen', asc: true };
 
 // Format date to Spanish locale
 function formatDate(dateString) {
@@ -51,9 +52,14 @@ function createBookCard(book) {
     const formattedDueDate = formatDate(book.DueDate);
     const formattedFirstSeen = formatDate(book.FirstSeen);
 
+    const author = book.Author ? escapeHtml(book.Author) : null;
+    const coleccion = book.Coleccion ? escapeHtml(book.Coleccion) : null;
+
     return `
         <div class="book-card ${statusClass}">
             <h3 class="book-title">${escapeHtml(book.Title)}</h3>
+            ${author ? `<p class="book-author">✍️ ${author}</p>` : ''}
+            ${coleccion ? `<p class="book-coleccion">📖 ${coleccion}</p>` : ''}
             <div class="book-meta">
                 <div class="book-meta-item">
                     <span>📅</span>
@@ -78,13 +84,47 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Filter books by search term
+// Sort books by a given field
+function sortBooks(books) {
+    const { field, asc } = currentSort;
+    return [...books].sort((a, b) => {
+        let valA, valB;
+        if (field === 'DueDate' || field === 'FirstSeen') {
+            valA = a[field] ? new Date(a[field]).getTime() : 0;
+            valB = b[field] ? new Date(b[field]).getTime() : 0;
+        } else {
+            valA = (a[field] || '').toLowerCase();
+            valB = (b[field] || '').toLowerCase();
+        }
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
+        return 0;
+    });
+}
+
+// Update sort button UI
+function updateSortButtons() {
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+        const field = btn.dataset.sort;
+        btn.classList.toggle('active', field === currentSort.field);
+        const arrow = btn.querySelector('.sort-arrow');
+        if (field === currentSort.field) {
+            arrow.textContent = currentSort.asc ? ' \u25B2' : ' \u25BC';
+        } else {
+            arrow.textContent = '';
+        }
+    });
+}
+
+// Filter books by search term (title, author, coleccion)
 function filterBooks(searchTerm) {
     const term = searchTerm.toLowerCase().trim();
     if (!term) return allBooks;
 
     return allBooks.filter(book =>
-        book.Title.toLowerCase().includes(term)
+        book.Title.toLowerCase().includes(term) ||
+        (book.Author && book.Author.toLowerCase().includes(term)) ||
+        (book.Coleccion && book.Coleccion.toLowerCase().includes(term))
     );
 }
 
@@ -124,8 +164,9 @@ function renderBooks(books) {
     if (dueSoon > 0) stats += ` · ${dueSoon} próximo${dueSoon !== 1 ? 's' : ''} a vencer`;
     statsText.textContent = stats;
 
-    // Render book cards
-    bookList.innerHTML = books.map(book => createBookCard(book)).join('');
+    // Sort and render book cards
+    const sorted = sortBooks(books);
+    bookList.innerHTML = sorted.map(book => createBookCard(book)).join('');
 }
 
 // Fetch and display last update time
@@ -164,9 +205,6 @@ async function loadBooks() {
 
         allBooks = await response.json();
 
-        // Sort by FirstSeen (oldest first)
-        allBooks.sort((a, b) => new Date(a.FirstSeen) - new Date(b.FirstSeen));
-
         renderBooks(allBooks);
         updateLastUpdateTime();
 
@@ -182,14 +220,33 @@ async function loadBooks() {
     }
 }
 
+// Re-render with current search and sort
+function refresh() {
+    const searchInput = document.getElementById('searchInput');
+    const filtered = filterBooks(searchInput.value);
+    renderBooks(filtered);
+    updateSortButtons();
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
 
     // Search functionality
-    searchInput.addEventListener('input', (e) => {
-        const filtered = filterBooks(e.target.value);
-        renderBooks(filtered);
+    searchInput.addEventListener('input', () => refresh());
+
+    // Sort button clicks
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const field = btn.dataset.sort;
+            if (currentSort.field === field) {
+                currentSort.asc = !currentSort.asc;
+            } else {
+                currentSort.field = field;
+                currentSort.asc = true;
+            }
+            refresh();
+        });
     });
 
     // Load books on page load

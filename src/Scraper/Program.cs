@@ -60,6 +60,8 @@ public class MadridLibraryScraper
     public class Book
     {
         public required string Title { get; set; }
+        public string? Author { get; set; }
+        public string? Coleccion { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime FirstSeen { get; set; }
     }
@@ -115,11 +117,14 @@ public class MadridLibraryScraper
         var bookCount = await bookItems.CountAsync();
         var books = new List<Book>(bookCount);
 
+        // First pass: collect title, due date, and detail page href
+        var bookData = new List<(string Title, DateTime? DueDate, string? Href)>();
         for (var i = 0; i < bookCount; i++)
         {
             var item = bookItems.Nth(i);
             var titleText = (await item.Locator("h4.lector_boxTitle a span").TextContentAsync())?.Trim();
             var dueText = (await item.Locator(".js-lectorPresta_xsfdev").TextContentAsync())?.Trim();
+            var href = await item.Locator("h4.lector_boxTitle a").GetAttributeAsync("href");
 
             // Remove trailing space and slash from title
             if (!string.IsNullOrEmpty(titleText) && titleText.EndsWith(" /"))
@@ -127,10 +132,43 @@ public class MadridLibraryScraper
                 titleText = titleText.Substring(0, titleText.Length - 2).Trim();
             }
 
+            bookData.Add((titleText ?? string.Empty, ParseDueDate(dueText), href));
+        }
+
+        // Second pass: visit each detail page to get author and coleccion
+        foreach (var (title, dueDate, href) in bookData)
+        {
+            string? author = null;
+            string? coleccion = null;
+            if (!string.IsNullOrEmpty(href))
+            {
+                try
+                {
+                    var detailUrl = href.StartsWith("http")
+                        ? href
+                        : new Uri(new Uri(page.Url), href).ToString();
+                    await page.GotoAsync(detailUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
+                    author = (await page.Locator("p.doc_author a").First.TextContentAsync())?.Trim();
+
+                    // Find the dd element next to dt containing "Colección"
+                    var coleccionDd = page.Locator("div.doc_data dl dt:has-text('Colección') + dd");
+                    if (await coleccionDd.CountAsync() > 0)
+                    {
+                        coleccion = (await coleccionDd.First.TextContentAsync())?.Trim();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"  Could not fetch details for '{title}': {ex.Message}");
+                }
+            }
+
             books.Add(new Book
             {
-                Title = titleText ?? string.Empty,
-                DueDate = ParseDueDate(dueText),
+                Title = title,
+                Author = author,
+                Coleccion = coleccion,
+                DueDate = dueDate,
                 FirstSeen = DateTime.UtcNow
             });
         }
@@ -201,8 +239,16 @@ public class MadridLibraryScraper
             var key = book.Title.Trim().ToLowerInvariant();
             if (bookDict.ContainsKey(key))
             {
-                // Update due date for existing book, keep original FirstSeen
+                // Update fields for existing book, keep original FirstSeen
                 bookDict[key].DueDate = book.DueDate;
+                if (!string.IsNullOrEmpty(book.Author))
+                {
+                    bookDict[key].Author = book.Author;
+                }
+                if (!string.IsNullOrEmpty(book.Coleccion))
+                {
+                    bookDict[key].Coleccion = book.Coleccion;
+                }
             }
             else
             {
@@ -258,6 +304,8 @@ public class MadridLibraryScraper
         foreach (var book in allBooks)
         {
             Console.WriteLine($"  {book.Title}");
+            Console.WriteLine($"    Author: {book.Author ?? "N/A"}");
+            Console.WriteLine($"    Coleccion: {book.Coleccion ?? "N/A"}");
             Console.WriteLine($"    Due: {book.DueDate?.ToString("d") ?? "N/A"}");
             Console.WriteLine($"    First seen: {book.FirstSeen:d}");
         }
