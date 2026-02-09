@@ -1,4 +1,5 @@
 const DATA_URL = 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/books.json';
+const DATA_BASE_URL = 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/';
 
 let allBooks = [];
 let currentSort = { field: 'FirstSeen', asc: true };
@@ -54,7 +55,10 @@ function createBookCard(book) {
 
     const author = book.Author ? escapeHtml(book.Author) : null;
     const coleccion = book.Coleccion ? escapeHtml(book.Coleccion) : null;
-    const imageUrl = book.ImageUrl ? escapeHtml(book.ImageUrl) : null;
+    const rawImageUrl = book.ImageUrl
+        ? (book.ImageUrl.startsWith('http') ? book.ImageUrl : DATA_BASE_URL + book.ImageUrl)
+        : null;
+    const imageUrl = rawImageUrl ? escapeHtml(rawImageUrl) : null;
 
     return `
         <div class="book-card ${statusClass}">
