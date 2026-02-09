@@ -147,7 +147,8 @@ public class MadridLibraryScraper
                     var detailUrl = href.StartsWith("http")
                         ? href
                         : new Uri(new Uri(page.Url), href).ToString();
-                    await page.GotoAsync(detailUrl, new() { WaitUntil = WaitUntilState.NetworkIdle });
+                    await page.GotoAsync(detailUrl, new() { WaitUntil = WaitUntilState.DOMContentLoaded });
+                    await page.Locator("p.doc_author").First.WaitForAsync(new() { Timeout = 10000 });
                     author = (await page.Locator("p.doc_author a").First.TextContentAsync())?.Trim();
 
                     // Find the dd element next to dt containing "Colección"
