@@ -298,9 +298,8 @@ public class MadridLibraryScraper
         foreach (var book in scraped)
         {
             var key = book.Title.Trim().ToLowerInvariant();
-            if (bookDict.ContainsKey(key))
+            if (bookDict.TryGetValue(key, out var existingBook))
             {
-                var existingBook = bookDict[key];
                 // Only update the return date, keep everything else unchanged
                 if (existingBook.DueDate != book.DueDate)
                 {
