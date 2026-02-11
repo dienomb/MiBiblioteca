@@ -181,6 +181,59 @@ public class MergeBooksTests
     }
 
     [Test]
+    public async Task Null_coleccion_is_filled_from_scraped_data()
+    {
+        var dueDate = new DateTime(2026, 2, 12);
+        var firstSeen = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var existing = new List<MadridLibraryScraper.Book>
+        {
+            MakeBook("Don Quijote", dueDate: dueDate, author: null,
+                coleccion: null, imageUrl: null, firstSeen: firstSeen)
+        };
+
+        var scraped = new List<MadridLibraryScraper.Book>
+        {
+            MakeBook("Don Quijote", dueDate: dueDate, author: "Cervantes",
+                coleccion: "Clasicos ; 1", imageUrl: "covers/don-quijote.jpg")
+        };
+
+        var result = MadridLibraryScraper.MergeBooks(existing, scraped);
+
+        await Assert.That(result).HasCount().EqualTo(1);
+        await Assert.That(result[0].Coleccion).IsEqualTo("Clasicos ; 1");
+        await Assert.That(result[0].Author).IsEqualTo("Cervantes");
+        await Assert.That(result[0].ImageUrl).IsEqualTo("covers/don-quijote.jpg");
+        await Assert.That(result[0].FirstSeen).IsEqualTo(firstSeen);
+    }
+
+    [Test]
+    public async Task Non_null_coleccion_is_not_overwritten_by_scraped_data()
+    {
+        var dueDate = new DateTime(2026, 2, 12);
+        var firstSeen = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var existing = new List<MadridLibraryScraper.Book>
+        {
+            MakeBook("Don Quijote", dueDate: dueDate, author: "Cervantes",
+                coleccion: "Clasicos", imageUrl: "covers/don-quijote.jpg", firstSeen: firstSeen)
+        };
+
+        var scraped = new List<MadridLibraryScraper.Book>
+        {
+            MakeBook("Don Quijote", dueDate: dueDate, author: "Other Author",
+                coleccion: "Different Collection", imageUrl: "covers/other.jpg")
+        };
+
+        var result = MadridLibraryScraper.MergeBooks(existing, scraped);
+
+        await Assert.That(result).HasCount().EqualTo(1);
+        await Assert.That(result[0].Coleccion).IsEqualTo("Clasicos");
+        await Assert.That(result[0].Author).IsEqualTo("Cervantes");
+        await Assert.That(result[0].ImageUrl).IsEqualTo("covers/don-quijote.jpg");
+    }
+
+    [Test]
     public async Task Result_is_ordered_by_first_seen()
     {
         var older = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
