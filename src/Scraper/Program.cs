@@ -301,11 +301,27 @@ public class MadridLibraryScraper
             if (bookDict.ContainsKey(key))
             {
                 var existingBook = bookDict[key];
-                // Only update the return date, keep everything else unchanged
+                // Update the return date
                 if (existingBook.DueDate != book.DueDate)
                 {
                     Console.WriteLine($"  Updated return date for '{existingBook.Title}': {existingBook.DueDate?.ToString("dd/MM/yyyy") ?? "N/A"} -> {book.DueDate?.ToString("dd/MM/yyyy") ?? "N/A"}");
                     existingBook.DueDate = book.DueDate;
+                }
+                // Backfill fields that were null if the new scrape found them
+                if (existingBook.Coleccion is null && book.Coleccion is not null)
+                {
+                    Console.WriteLine($"  Filled colección for '{existingBook.Title}': {book.Coleccion}");
+                    existingBook.Coleccion = book.Coleccion;
+                }
+                if (existingBook.Author is null && book.Author is not null)
+                {
+                    Console.WriteLine($"  Filled author for '{existingBook.Title}': {book.Author}");
+                    existingBook.Author = book.Author;
+                }
+                if (existingBook.ImageUrl is null && book.ImageUrl is not null)
+                {
+                    Console.WriteLine($"  Filled image for '{existingBook.Title}': {book.ImageUrl}");
+                    existingBook.ImageUrl = book.ImageUrl;
                 }
                 updatedCount++;
             }
