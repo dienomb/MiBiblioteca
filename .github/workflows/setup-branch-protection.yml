@@ -1,8 +1,11 @@
 name: Setup Branch Protection
 
 # Manual trigger to apply branch protection rules.
-# Requires a PAT with "repo" scope stored as the ADMIN_TOKEN secret.
-# Create one at: https://github.com/settings/tokens
+# Requires a fine-grained PAT stored as the ADMIN_TOKEN secret.
+# Create one at: https://github.com/settings/personal-access-tokens/new
+#   - Resource owner: your account
+#   - Repository access: "Only select repositories" → MiBiblioteca
+#   - Permissions → Repository → Administration: Read and write
 on:
   workflow_dispatch:
 
