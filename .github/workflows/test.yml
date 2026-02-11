@@ -7,10 +7,6 @@ on:
       - 'src/Scraper.Tests/**'
       - '.github/workflows/test.yml'
   pull_request:
-    paths:
-      - 'src/Scraper/**'
-      - 'src/Scraper.Tests/**'
-      - '.github/workflows/test.yml'
 
 jobs:
   test:
