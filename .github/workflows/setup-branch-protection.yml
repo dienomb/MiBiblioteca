@@ -1,0 +1,33 @@
+name: Setup Branch Protection
+
+on:
+  workflow_dispatch: # Manual trigger only — run once to configure protection
+
+permissions:
+  administration: write
+
+jobs:
+  protect-main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure branch protection requiring tests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method PUT \
+            "repos/${{ github.repository }}/branches/main/protection" \
+            --input - <<'EOF'
+          {
+            "required_status_checks": {
+              "strict": false,
+              "contexts": ["test"]
+            },
+            "enforce_admins": false,
+            "required_pull_request_reviews": null,
+            "restrictions": null
+          }
+          EOF
+          echo "Branch protection configured:"
+          echo "  - Required status check: test"
+          echo "  - Admin enforcement: OFF (SCRAPER_PAT can bypass)"
