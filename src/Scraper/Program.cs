@@ -275,42 +275,50 @@ public class MadridLibraryScraper
         }
     }
 
-    private static List<Book> MergeBooks(List<Book> existing, List<Book> scraped)
+    internal static List<Book> MergeBooks(List<Book> existing, List<Book> scraped)
     {
-        // Create dictionary keyed by normalized title only (deduplicate by title)
-        var bookDict = existing.ToDictionary(
-            b => b.Title.Trim().ToLowerInvariant(),
-            b => b
-        );
+        // Create dictionary keyed by normalized title, safely handling potential duplicates
+        var bookDict = new Dictionary<string, Book>();
+        foreach (var book in existing)
+        {
+            var key = book.Title.Trim().ToLowerInvariant();
+            if (!bookDict.ContainsKey(key))
+            {
+                bookDict[key] = book;
+            }
+            else
+            {
+                Console.WriteLine($"  Warning: duplicate existing entry skipped: '{book.Title}'");
+            }
+        }
 
-        // Add new books or update due dates for existing ones
+        var updatedCount = 0;
+        var addedCount = 0;
+
         foreach (var book in scraped)
         {
             var key = book.Title.Trim().ToLowerInvariant();
             if (bookDict.ContainsKey(key))
             {
-                // Update fields for existing book, keep original FirstSeen
-                bookDict[key].DueDate = book.DueDate;
-                if (!string.IsNullOrEmpty(book.Author))
+                var existingBook = bookDict[key];
+                // Only update the return date, keep everything else unchanged
+                if (existingBook.DueDate != book.DueDate)
                 {
-                    bookDict[key].Author = book.Author;
+                    Console.WriteLine($"  Updated return date for '{existingBook.Title}': {existingBook.DueDate?.ToString("dd/MM/yyyy") ?? "N/A"} -> {book.DueDate?.ToString("dd/MM/yyyy") ?? "N/A"}");
+                    existingBook.DueDate = book.DueDate;
                 }
-                if (!string.IsNullOrEmpty(book.Coleccion))
-                {
-                    bookDict[key].Coleccion = book.Coleccion;
-                }
-                if (!string.IsNullOrEmpty(book.ImageUrl))
-                {
-                    bookDict[key].ImageUrl = book.ImageUrl;
-                }
+                updatedCount++;
             }
             else
             {
-                // Add new book
+                // Genuinely new book
                 bookDict[key] = book;
+                addedCount++;
+                Console.WriteLine($"  New book: '{book.Title}'");
             }
         }
 
+        Console.WriteLine($"Merge result: {addedCount} new, {updatedCount} existing (updated), {bookDict.Count} total");
         return bookDict.Values.OrderBy(b => b.FirstSeen).ToList();
     }
 
