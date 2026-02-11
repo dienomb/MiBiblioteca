@@ -32,7 +32,7 @@ jobs:
         run: dotnet build src/Scraper.Tests/Scraper.Tests.csproj --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet run --project src/Scraper.Tests/Scraper.Tests.csproj --configuration Release -- --report-trx --output-directory test-results
+        run: dotnet run --project src/Scraper.Tests/Scraper.Tests.csproj --configuration Release -- --report-trx --results-directory test-results
 
       - name: Upload test results
         if: always()
