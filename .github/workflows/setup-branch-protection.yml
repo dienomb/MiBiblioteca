@@ -1,43 +1,21 @@
-name: Setup Branch Protection
+name: Remove Branch Protection
 
 on:
-  workflow_dispatch: # Manual trigger only — run once to configure protection
+  workflow_dispatch: # Manual trigger only — run once to allow direct pushes
 
 permissions:
   administration: write
 
 jobs:
-  protect-main:
+  remove-protection:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Remove existing branch protection (if any)
+      - name: Remove branch protection from main
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method DELETE \
             "repos/${{ github.repository }}/branches/main/protection" \
-            2>/dev/null || echo "No existing branch protection to remove"
-
-      - name: Create branch protection requiring PRs
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api --method PUT \
-            "repos/${{ github.repository }}/branches/main/protection" \
-            --input - <<'EOF'
-          {
-            "required_pull_request_reviews": {
-              "required_approving_review_count": 0,
-              "dismiss_stale_reviews_on_push": false,
-              "require_code_owner_review": false,
-              "require_last_push_approval": false
-            },
-            "enforce_admins": false,
-            "required_status_checks": null,
-            "restrictions": null
-          }
-          EOF
-          echo "Branch protection configured:"
-          echo "  - Pull requests required to merge into main"
-          echo "  - Admin enforcement OFF (SCRAPER_PAT can bypass)"
+            2>/dev/null && echo "Branch protection removed from main" \
+            || echo "No branch protection found on main"
