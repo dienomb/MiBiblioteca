@@ -46,5 +46,53 @@
     "ImageUrl": "covers/el-caso-del-volcan-explosivo.jpg",
     "DueDate": "2026-02-12T00:00:00",
     "FirstSeen": "2026-02-09T23:41:53.8042068Z"
+  },
+  {
+    "Title": "Octavo viaje al Reino de la Fantasía",
+    "Author": "Stilton, Geronimo",
+    "Coleccion": "El Reino de la Fantasía ; 8",
+    "ImageUrl": "covers/octavo-viaje-al-reino-de-la-fantasia.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-11T19:11:11.963865Z"
+  },
+  {
+    "Title": "¡Qué asco de sándwich!",
+    "Author": "Edwards, Gareth (1960-)",
+    "Coleccion": "Miau",
+    "ImageUrl": "covers/que-asco-de-sandwich.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-11T19:11:17.0029923Z"
+  },
+  {
+    "Title": "El misterio del violín desaparecido",
+    "Author": "Stilton, Geronimo",
+    "Coleccion": "Gerónimo Stilton ; 64",
+    "ImageUrl": "covers/el-misterio-del-violin-desaparecido.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-11T19:11:20.9886562Z"
+  },
+  {
+    "Title": "Cuentos para leer con lupa del detective Picard",
+    "Author": "Mañas Romero, Pedro (1981-)",
+    "Coleccion": "Cuentos para leer con lupa del detective Picard ; 1",
+    "ImageUrl": "covers/cuentos-para-leer-con-lupa-del-detective-picard.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-11T19:11:26.0153417Z"
+  },
+  {
+    "Title": "El cerdito de Navidad",
+    "Author": "Rowling, J. K. (1965-)",
+    "Coleccion": null,
+    "ImageUrl": "covers/el-cerdito-de-navidad.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-11T19:11:32.7313838Z"
+  },
+  {
+    "Title": "Lo que escuchó la mariquita",
+    "Author": "Donaldson, Julia (1948-)",
+    "Coleccion": null,
+    "ImageUrl": "covers/lo-que-escucho-la-mariquita.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-11T19:11:36.0578561Z"
   }
 ]
