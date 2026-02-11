@@ -275,7 +275,7 @@ public class MadridLibraryScraper
         }
     }
 
-    private static List<Book> MergeBooks(List<Book> existing, List<Book> scraped)
+    internal static List<Book> MergeBooks(List<Book> existing, List<Book> scraped)
     {
         // Create dictionary keyed by normalized title, safely handling potential duplicates
         var bookDict = new Dictionary<string, Book>();
