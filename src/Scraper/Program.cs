@@ -195,7 +195,7 @@ public class MadridLibraryScraper
                                 {
                                     var imgBytes = await response.BodyAsync();
                                     await File.WriteAllBytesAsync(Path.Combine(coversDir, fileName), imgBytes);
-                                    imageUrl = $"covers/{fileName}";
+                                    imageUrl = $"{Path.GetFileName(coversDir)}/{fileName}";
                                     Console.WriteLine($"  Saved cover for '{title}'");
                                 }
                             }
