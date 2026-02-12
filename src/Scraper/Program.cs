@@ -190,13 +190,22 @@ public class MadridLibraryScraper
                             {
                                 var slug = Slugify(title);
                                 var fileName = $"{slug}.jpg";
-                                var response = await page.APIRequest.GetAsync(fullUrl);
-                                if (response.Ok)
+                                var filePath = Path.Combine(coversDir, fileName);
+                                if (File.Exists(filePath))
                                 {
-                                    var imgBytes = await response.BodyAsync();
-                                    await File.WriteAllBytesAsync(Path.Combine(coversDir, fileName), imgBytes);
                                     imageUrl = $"{Path.GetFileName(coversDir)}/{fileName}";
-                                    Console.WriteLine($"  Saved cover for '{title}'");
+                                    Console.WriteLine($"  Cover already exists for '{title}', skipping download");
+                                }
+                                else
+                                {
+                                    var response = await page.APIRequest.GetAsync(fullUrl);
+                                    if (response.Ok)
+                                    {
+                                        var imgBytes = await response.BodyAsync();
+                                        await File.WriteAllBytesAsync(filePath, imgBytes);
+                                        imageUrl = $"{Path.GetFileName(coversDir)}/{fileName}";
+                                        Console.WriteLine($"  Saved cover for '{title}'");
+                                    }
                                 }
                             }
                             catch (Exception imgEx)
