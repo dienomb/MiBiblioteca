@@ -8,6 +8,7 @@ let booksByUser = { user1: [], user2: [] };
 let allBooks = [];
 let currentSort = { field: 'FirstSeen', asc: true };
 let currentUserFilter = 'all';
+let activeUserCount = 0;
 
 // Format date to Spanish locale
 function formatDate(dateString) {
@@ -76,7 +77,7 @@ function createBookCard(book) {
             <div class="book-info">
                 <div class="book-title-row">
                     <h3 class="book-title">${escapeHtml(book.Title)}</h3>
-                    <span class="user-badge ${userBadgeClass}">${userLabel}</span>
+                    ${activeUserCount > 1 ? `<span class="user-badge ${userBadgeClass}">${userLabel}</span>` : ''}
                 </div>
                 ${author ? `<p class="book-author">\u270d\ufe0f ${author}</p>` : ''}
                 ${coleccion ? `<p class="book-coleccion">\ud83d\udcd6 ${coleccion}</p>` : ''}
@@ -263,6 +264,12 @@ async function loadBooks() {
         booksByUser.user1 = user1Books.map(b => ({ ...b, _user: 'user1' }));
         booksByUser.user2 = user2Books.map(b => ({ ...b, _user: 'user2' }));
         allBooks = [...booksByUser.user1, ...booksByUser.user2];
+
+        activeUserCount = (user1Books.length > 0 ? 1 : 0) + (user2Books.length > 0 ? 1 : 0);
+        const userTabs = document.querySelector('.user-tabs');
+        if (userTabs) {
+            userTabs.style.display = activeUserCount > 1 ? '' : 'none';
+        }
 
         refresh();
         updateLastUpdateTime();
