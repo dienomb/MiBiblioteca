@@ -78,6 +78,40 @@ header h1 {
     font-weight: 600;
 }
 
+/* User tabs */
+.user-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.user-tab {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-tab:hover {
+    border-color: var(--accent-light);
+    color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.user-tab.active {
+    background: linear-gradient(135deg, var(--accent), #9d4edd);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(123, 44, 191, 0.3);
+}
+
 /* Search */
 .search-section {
     margin-bottom: 1.5rem;

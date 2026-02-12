@@ -1,8 +1,12 @@
-const DATA_URL = 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/books.json';
+const DATA_URLS = {
+    user1: 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/books.json',
+    user2: 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/books2.json'
+};
 const DATA_BASE_URL = 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/';
 
 let allBooks = [];
 let currentSort = { field: 'FirstSeen', asc: true };
+let currentUser = 'user1';
 
 // Format date to Spanish locale
 function formatDate(dateString) {
@@ -55,6 +59,8 @@ function createBookCard(book) {
 
     const author = book.Author ? escapeHtml(book.Author) : null;
     const coleccion = book.Coleccion ? escapeHtml(book.Coleccion) : null;
+
+    const coversSubdir = currentUser === 'user2' ? 'covers2/' : 'covers/';
     const rawImageUrl = book.ImageUrl
         ? (book.ImageUrl.startsWith('http') ? book.ImageUrl : DATA_BASE_URL + book.ImageUrl)
         : null;
@@ -67,18 +73,18 @@ function createBookCard(book) {
                 : ''}
             <div class="book-info">
                 <h3 class="book-title">${escapeHtml(book.Title)}</h3>
-                ${author ? `<p class="book-author">✍️ ${author}</p>` : ''}
-                ${coleccion ? `<p class="book-coleccion">📖 ${coleccion}</p>` : ''}
+                ${author ? `<p class="book-author">\u270d\ufe0f ${author}</p>` : ''}
+                ${coleccion ? `<p class="book-coleccion">\ud83d\udcd6 ${coleccion}</p>` : ''}
                 <div class="book-meta">
                     <div class="book-meta-item">
-                        <span>📅</span>
+                        <span>\ud83d\udcc5</span>
                         <span class="due-date ${statusClass}">
                             ${formattedDueDate}
                             ${statusText ? `<br><small>${statusText}</small>` : ''}
                         </span>
                     </div>
                     <div class="book-meta-item">
-                        <span>👁️</span>
+                        <span>\ud83d\udc41\ufe0f</span>
                         <span>Visto: ${formattedFirstSeen}</span>
                     </div>
                 </div>
@@ -162,7 +168,7 @@ function renderBooks(books) {
     if (books.length === 0) {
         bookList.innerHTML = `
             <div class="empty-state">
-                <h3>📚 No se encontraron libros</h3>
+                <h3>\ud83d\udcda No se encontraron libros</h3>
                 <p>No hay libros que coincidan con tu busqueda.</p>
             </div>
         `;
@@ -184,8 +190,8 @@ function renderBooks(books) {
 
     // Update stats
     let stats = `${books.length} libro${books.length !== 1 ? 's' : ''}`;
-    if (overdue > 0) stats += ` · ${overdue} vencido${overdue !== 1 ? 's' : ''}`;
-    if (dueSoon > 0) stats += ` · ${dueSoon} proximo${dueSoon !== 1 ? 's' : ''} a vencer`;
+    if (overdue > 0) stats += ` \u00b7 ${overdue} vencido${overdue !== 1 ? 's' : ''}`;
+    if (dueSoon > 0) stats += ` \u00b7 ${dueSoon} proximo${dueSoon !== 1 ? 's' : ''} a vencer`;
     statsText.textContent = stats;
 
     // Sort and render book cards
@@ -196,7 +202,8 @@ function renderBooks(books) {
 // Fetch and display last update time
 async function updateLastUpdateTime() {
     try {
-        const response = await fetch('https://api.github.com/repos/dienomb/MiBiblioteca/commits?path=data/books.json&page=1&per_page=1');
+        const dataFile = currentUser === 'user2' ? 'data/books2.json' : 'data/books.json';
+        const response = await fetch(`https://api.github.com/repos/dienomb/MiBiblioteca/commits?path=${dataFile}&page=1&per_page=1`);
         const commits = await response.json();
 
         if (commits && commits.length > 0) {
@@ -219,11 +226,23 @@ async function updateLastUpdateTime() {
 // Load books from GitHub
 async function loadBooks() {
     const bookList = document.getElementById('bookList');
+    bookList.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando libros...</p>
+        </div>
+    `;
 
     try {
-        const response = await fetch(DATA_URL);
+        const response = await fetch(DATA_URLS[currentUser]);
 
         if (!response.ok) {
+            if (response.status === 404) {
+                allBooks = [];
+                renderBooks(allBooks);
+                document.getElementById('lastUpdate').textContent = '';
+                return;
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -236,9 +255,9 @@ async function loadBooks() {
         console.error('Error loading books:', error);
         bookList.innerHTML = `
             <div class="error">
-                <h3>❌ Error al cargar los libros</h3>
+                <h3>\u274c Error al cargar los libros</h3>
                 <p>No se pudieron cargar los libros. Por favor, intentalo de nuevo mas tarde.</p>
-                <p><small>Error: ${error.message}</small></p>
+                <p><small>Error: ${escapeHtml(error.message)}</small></p>
             </div>
         `;
     }
@@ -270,6 +289,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentSort.asc = true;
             }
             refresh();
+        });
+    });
+
+    // User tab clicks
+    document.querySelectorAll('.user-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const user = tab.dataset.user;
+            if (user === currentUser) return;
+            currentUser = user;
+            document.querySelectorAll('.user-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            searchInput.value = '';
+            loadBooks();
         });
     });
 

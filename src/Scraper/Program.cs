@@ -338,6 +338,33 @@ public class MadridLibraryScraper
         return bookDict.Values.OrderBy(b => b.FirstSeen).ToList();
     }
 
+    private static async Task ScrapeUser(string label, string username, string password, string dataFilePath, string coversDir)
+    {
+        Directory.CreateDirectory(coversDir);
+
+        Console.WriteLine($"\n--- Scraping {label} ---");
+        Console.WriteLine("Scraping library website...");
+        var scrapedBooks = await ScrapeBooks(username, password, coversDir);
+        Console.WriteLine($"Scraped {scrapedBooks.Count} books from website");
+
+        var existingBooks = await LoadExistingBooks(dataFilePath);
+
+        var allBooks = MergeBooks(existingBooks, scrapedBooks);
+        Console.WriteLine($"Total unique books (by title): {allBooks.Count}");
+
+        await SaveBooks(dataFilePath, allBooks);
+
+        Console.WriteLine($"\n=== {label} Book List ===");
+        foreach (var book in allBooks)
+        {
+            Console.WriteLine($"  {book.Title}");
+            Console.WriteLine($"    Author: {book.Author ?? "N/A"}");
+            Console.WriteLine($"    Coleccion: {book.Coleccion ?? "N/A"}");
+            Console.WriteLine($"    Due: {book.DueDate?.ToString("d") ?? "N/A"}");
+            Console.WriteLine($"    First seen: {book.FirstSeen:d}");
+        }
+    }
+
     public static async Task Main()
     {
         Console.WriteLine("Madrid Library Book Tracker");
@@ -354,40 +381,30 @@ public class MadridLibraryScraper
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            Console.Error.WriteLine("ERROR: Missing required configuration");
+            Console.Error.WriteLine("ERROR: Missing required configuration for user 1");
             Console.Error.WriteLine("Required: LibraryUsername, LibraryPassword");
             Console.Error.WriteLine("Set via appsettings.json or environment variables (LIBRARY_USERNAME, LIBRARY_PASSWORD)");
             Environment.Exit(1);
         }
 
-        // Define data file path (relative to repository root)
+        // Scrape user 1
         var dataFilePath = Path.Combine("..", "..", "data", "books.json");
         var coversDir = Path.Combine("..", "..", "data", "covers");
-        Directory.CreateDirectory(coversDir);
+        await ScrapeUser("User 1", username, password, dataFilePath, coversDir);
 
-        // Scrape new books
-        Console.WriteLine("\nScraping library website...");
-        var scrapedBooks = await ScrapeBooks(username, password, coversDir);
-        Console.WriteLine($"Scraped {scrapedBooks.Count} books from website");
+        // Scrape user 2 (optional)
+        var username2 = config["LibraryUsername2"] ?? Environment.GetEnvironmentVariable("LIBRARY_USERNAME_2");
+        var password2 = config["LibraryPassword2"] ?? Environment.GetEnvironmentVariable("LIBRARY_PASSWORD_2");
 
-        // Load existing books from file
-        var existingBooks = await LoadExistingBooks(dataFilePath);
-
-        // Merge and deduplicate by title
-        var allBooks = MergeBooks(existingBooks, scrapedBooks);
-        Console.WriteLine($"Total unique books (by title): {allBooks.Count}");
-
-        // Save updated list to file
-        await SaveBooks(dataFilePath, allBooks);
-
-        Console.WriteLine("\n=== Book List ===");
-        foreach (var book in allBooks)
+        if (!string.IsNullOrEmpty(username2) && !string.IsNullOrEmpty(password2))
         {
-            Console.WriteLine($"  {book.Title}");
-            Console.WriteLine($"    Author: {book.Author ?? "N/A"}");
-            Console.WriteLine($"    Coleccion: {book.Coleccion ?? "N/A"}");
-            Console.WriteLine($"    Due: {book.DueDate?.ToString("d") ?? "N/A"}");
-            Console.WriteLine($"    First seen: {book.FirstSeen:d}");
+            var dataFilePath2 = Path.Combine("..", "..", "data", "books2.json");
+            var coversDir2 = Path.Combine("..", "..", "data", "covers2");
+            await ScrapeUser("User 2", username2, password2, dataFilePath2, coversDir2);
+        }
+        else
+        {
+            Console.WriteLine("\nUser 2 credentials not configured, skipping.");
         }
 
         Console.WriteLine("\nSync complete!");

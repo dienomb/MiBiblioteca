@@ -6,11 +6,19 @@ The GitHub Actions workflow needs access to your library credentials and Azure s
 
 ## Required Secrets
 
-You need to add three secrets to your repository:
+You need to add these secrets to your repository:
 
-1. **LIBRARY_USERNAME** - Your Madrid library username
-2. **LIBRARY_PASSWORD** - Your Madrid library password
-3. **AZURE_STORAGE_CONNECTION_STRING** - Your Azure storage connection string
+1. **LIBRARYUSERNAME** - Your Madrid library username
+2. **LIBRARYPASSWORD** - Your Madrid library password
+
+### Optional Secrets (Second User)
+
+To also scrape a second user's library data:
+
+3. **LIBRARYUSERNAME2** - Second user's Madrid library username
+4. **LIBRARYPASSWORD2** - Second user's Madrid library password
+
+If the second user secrets are not configured, the scraper will only run for the primary user.
 
 ## How to Add Secrets
 
@@ -25,31 +33,25 @@ You need to add three secrets to your repository:
 
 For each secret, click **New repository secret**:
 
-#### Secret 1: LIBRARY_USERNAME
-- **Name:** `LIBRARY_USERNAME`
+#### Secret 1: LIBRARYUSERNAME
+- **Name:** `LIBRARYUSERNAME`
 - **Secret:** Your Madrid library username
 - Click **Add secret**
 
-#### Secret 2: LIBRARY_PASSWORD
-- **Name:** `LIBRARY_PASSWORD`
+#### Secret 2: LIBRARYPASSWORD
+- **Name:** `LIBRARYPASSWORD`
 - **Secret:** Your Madrid library password
 - Click **Add secret**
 
-#### Secret 3: AZURE_STORAGE_CONNECTION_STRING
-- **Name:** `AZURE_STORAGE_CONNECTION_STRING`
-- **Secret:** Your Azure storage connection string
-  - Format: `DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net`
-  - Get this from Azure Portal > Storage Account > Access keys > Connection string
+#### Secret 3 (Optional): LIBRARYUSERNAME2
+- **Name:** `LIBRARYUSERNAME2`
+- **Secret:** Second user's Madrid library username
 - Click **Add secret**
 
-## How to Get Azure Storage Connection String
-
-1. Go to [Azure Portal](https://portal.azure.com)
-2. Navigate to your Storage Account
-3. In the left menu, click **Access keys**
-4. Click **Show** next to key1's Connection string
-5. Click **Copy to clipboard**
-6. Paste it as the GitHub Secret value
+#### Secret 4 (Optional): LIBRARYPASSWORD2
+- **Name:** `LIBRARYPASSWORD2`
+- **Secret:** Second user's Madrid library password
+- Click **Add secret**
 
 ## Testing the Workflow
 
