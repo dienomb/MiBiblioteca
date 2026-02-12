@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "Title": "El caso del trineo encantado",
+    "Author": "García-Rojo, Patricia (1984-)",
+    "Coleccion": "Los Cazamisterios ; 7",
+    "ImageUrl": "covers2/el-caso-del-trineo-encantado.jpg",
+    "DueDate": "2026-03-04T00:00:00",
+    "FirstSeen": "2026-02-12T21:31:33.4842089Z"
+  },
+  {
+    "Title": "El caso del robo bajo el mar",
+    "Author": "García-Rojo, Patricia (1984-)",
+    "Coleccion": "Los Cazamisterios ; 8",
+    "ImageUrl": "covers2/el-caso-del-robo-bajo-el-mar.jpg",
+    "DueDate": "2026-03-04T00:00:00",
+    "FirstSeen": "2026-02-12T21:31:38.205428Z"
+  },
+  {
+    "Title": "En busca de las seis semillas",
+    "Author": "Galán, Ana (1964-)",
+    "Coleccion": "Mondragó",
+    "ImageUrl": "covers2/en-busca-de-las-seis-semillas.jpg",
+    "DueDate": "2026-03-04T00:00:00",
+    "FirstSeen": "2026-02-12T21:31:42.1754986Z"
+  },
+  {
+    "Title": "Dejadme en paz",
+    "Author": "El Hematocrítico (1976-2023)",
+    "Coleccion": "Max Burbuja ; 1",
+    "ImageUrl": "covers2/dejadme-en-paz.jpg",
+    "DueDate": "2026-03-04T00:00:00",
+    "FirstSeen": "2026-02-12T21:31:46.6855963Z"
+  },
+  {
+    "Title": "Solos",
+    "Author": "Vahlund, Elias (1973-)",
+    "Coleccion": "Manual para superhéroes ; Tercera parte",
+    "ImageUrl": "covers2/solos.jpg",
+    "DueDate": "2026-03-04T00:00:00",
+    "FirstSeen": "2026-02-12T21:31:50.2314599Z"
+  },
+  {
+    "Title": "Lo que escuchó la mariquita en la playa",
+    "Author": "Donaldson, Julia (1948-)",
+    "Coleccion": null,
+    "ImageUrl": "covers2/lo-que-escucho-la-mariquita-en-la-playa.jpg",
+    "DueDate": "2026-03-13T00:00:00",
+    "FirstSeen": "2026-02-12T21:31:55.5996363Z"
+  }
+]
