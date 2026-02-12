@@ -78,6 +78,40 @@ header h1 {
     font-weight: 600;
 }
 
+/* User tabs */
+.user-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.user-tab {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-tab:hover {
+    border-color: var(--accent-light);
+    color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.user-tab.active {
+    background: linear-gradient(135deg, var(--accent), #9d4edd);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(123, 44, 191, 0.3);
+}
+
 /* Search */
 .search-section {
     margin-bottom: 1.5rem;
@@ -253,11 +287,39 @@ header h1 {
     border-left-color: var(--due-soon);
 }
 
+.book-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
 .book-title {
     font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-dark);
-    margin-bottom: 0.4rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.user-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+
+.user-badge-1 {
+    background: #ede9fe;
+    color: var(--accent);
+}
+
+.user-badge-2 {
+    background: #fef3c7;
+    color: #92400e;
 }
 
 .book-author {

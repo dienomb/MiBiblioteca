@@ -38,6 +38,8 @@ jobs:
         env:
           LIBRARY_USERNAME: ${{ secrets.LIBRARYUSERNAME }}
           LIBRARY_PASSWORD: ${{ secrets.LIBRARYPASSWORD }}
+          LIBRARY_USERNAME_2: ${{ secrets.LIBRARYUSERNAME2 }}
+          LIBRARY_PASSWORD_2: ${{ secrets.LIBRARYPASSWORD2 }}
         run: dotnet run --configuration Release
 
       - name: Commit and push changes
@@ -46,7 +48,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/books.json data/covers/
+          git add data/books.json data/covers/ data/books2.json data/covers2/
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
