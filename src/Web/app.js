@@ -4,9 +4,10 @@ const DATA_URLS = {
 };
 const DATA_BASE_URL = 'https://raw.githubusercontent.com/dienomb/MiBiblioteca/main/data/';
 
+let booksByUser = { user1: [], user2: [] };
 let allBooks = [];
 let currentSort = { field: 'FirstSeen', asc: true };
-let currentUser = 'user1';
+let currentUserFilter = 'all';
 
 // Format date to Spanish locale
 function formatDate(dateString) {
@@ -59,12 +60,13 @@ function createBookCard(book) {
 
     const author = book.Author ? escapeHtml(book.Author) : null;
     const coleccion = book.Coleccion ? escapeHtml(book.Coleccion) : null;
-
-    const coversSubdir = currentUser === 'user2' ? 'covers2/' : 'covers/';
     const rawImageUrl = book.ImageUrl
         ? (book.ImageUrl.startsWith('http') ? book.ImageUrl : DATA_BASE_URL + book.ImageUrl)
         : null;
     const imageUrl = rawImageUrl ? escapeHtml(rawImageUrl) : null;
+
+    const userLabel = book._user === 'user1' ? 'Usuario 1' : 'Usuario 2';
+    const userBadgeClass = book._user === 'user1' ? 'user-badge-1' : 'user-badge-2';
 
     return `
         <div class="book-card ${statusClass}">
@@ -72,7 +74,10 @@ function createBookCard(book) {
                 ? `<img class="book-cover" src="${imageUrl}" alt="${escapeHtml(book.Title)}" onclick="openLightbox(this.src, this.alt)">`
                 : ''}
             <div class="book-info">
-                <h3 class="book-title">${escapeHtml(book.Title)}</h3>
+                <div class="book-title-row">
+                    <h3 class="book-title">${escapeHtml(book.Title)}</h3>
+                    <span class="user-badge ${userBadgeClass}">${userLabel}</span>
+                </div>
                 ${author ? `<p class="book-author">\u270d\ufe0f ${author}</p>` : ''}
                 ${coleccion ? `<p class="book-coleccion">\ud83d\udcd6 ${coleccion}</p>` : ''}
                 <div class="book-meta">
@@ -148,12 +153,19 @@ function updateSortButtons() {
     });
 }
 
+// Get books for the current user filter
+function getFilteredByUser() {
+    if (currentUserFilter === 'all') return allBooks;
+    return booksByUser[currentUserFilter] || [];
+}
+
 // Filter books by search term (title, author, coleccion)
 function filterBooks(searchTerm) {
+    const books = getFilteredByUser();
     const term = searchTerm.toLowerCase().trim();
-    if (!term) return allBooks;
+    if (!term) return books;
 
-    return allBooks.filter(book =>
+    return books.filter(book =>
         book.Title.toLowerCase().includes(term) ||
         (book.Author && book.Author.toLowerCase().includes(term)) ||
         (book.Coleccion && book.Coleccion.toLowerCase().includes(term))
@@ -202,8 +214,7 @@ function renderBooks(books) {
 // Fetch and display last update time
 async function updateLastUpdateTime() {
     try {
-        const dataFile = currentUser === 'user2' ? 'data/books2.json' : 'data/books.json';
-        const response = await fetch(`https://api.github.com/repos/dienomb/MiBiblioteca/commits?path=${dataFile}&page=1&per_page=1`);
+        const response = await fetch('https://api.github.com/repos/dienomb/MiBiblioteca/commits?path=data/books.json&page=1&per_page=1');
         const commits = await response.json();
 
         if (commits && commits.length > 0) {
@@ -223,7 +234,17 @@ async function updateLastUpdateTime() {
     }
 }
 
-// Load books from GitHub
+// Fetch a single user's books, returning [] on 404
+async function fetchUserBooks(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        if (response.status === 404) return [];
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+}
+
+// Load books from both users
 async function loadBooks() {
     const bookList = document.getElementById('bookList');
     bookList.innerHTML = `
@@ -234,21 +255,16 @@ async function loadBooks() {
     `;
 
     try {
-        const response = await fetch(DATA_URLS[currentUser]);
+        const [user1Books, user2Books] = await Promise.all([
+            fetchUserBooks(DATA_URLS.user1),
+            fetchUserBooks(DATA_URLS.user2)
+        ]);
 
-        if (!response.ok) {
-            if (response.status === 404) {
-                allBooks = [];
-                renderBooks(allBooks);
-                document.getElementById('lastUpdate').textContent = '';
-                return;
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        booksByUser.user1 = user1Books.map(b => ({ ...b, _user: 'user1' }));
+        booksByUser.user2 = user2Books.map(b => ({ ...b, _user: 'user2' }));
+        allBooks = [...booksByUser.user1, ...booksByUser.user2];
 
-        allBooks = await response.json();
-
-        renderBooks(allBooks);
+        refresh();
         updateLastUpdateTime();
 
     } catch (error) {
@@ -296,12 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.user-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             const user = tab.dataset.user;
-            if (user === currentUser) return;
-            currentUser = user;
+            if (user === currentUserFilter) return;
+            currentUserFilter = user;
             document.querySelectorAll('.user-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            searchInput.value = '';
-            loadBooks();
+            refresh();
         });
     });
 
