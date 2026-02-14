@@ -8,6 +8,7 @@ let booksByUser = { user1: [], user2: [] };
 let allBooks = [];
 let currentSort = { field: 'FirstSeen', asc: true };
 let currentUserFilter = 'all';
+let currentAuthorFilter = null;
 let activeUserCount = 0;
 
 // Format date to Spanish locale
@@ -44,7 +45,7 @@ function getStatusClass(daysUntil) {
 // Get status text based on due date
 function getStatusText(daysUntil) {
     if (daysUntil === null) return '';
-    if (daysUntil < 0) return `Vencido hace ${Math.abs(daysUntil)} dias`;
+    if (daysUntil < 0) return `Devuelto hace ${Math.abs(daysUntil)} dias`;
     if (daysUntil === 0) return 'Vence hoy';
     if (daysUntil === 1) return 'Vence manana';
     if (daysUntil <= 3) return `Vence en ${daysUntil} dias`;
@@ -79,7 +80,7 @@ function createBookCard(book) {
                     <h3 class="book-title">${escapeHtml(book.Title)}</h3>
                     ${activeUserCount > 1 ? `<span class="user-badge ${userBadgeClass}">${userLabel}</span>` : ''}
                 </div>
-                ${author ? `<p class="book-author">\u270d\ufe0f ${author}</p>` : ''}
+                ${author ? `<p class="book-author" onclick="filterByAuthor('${author.replace(/'/g, "\\'")}')"><span class="author-link">\u270d\ufe0f ${author}</span></p>` : ''}
                 ${coleccion ? `<p class="book-coleccion">\ud83d\udcd6 ${coleccion}</p>` : ''}
                 <div class="book-meta">
                     <div class="book-meta-item">
@@ -160,9 +161,40 @@ function getFilteredByUser() {
     return booksByUser[currentUserFilter] || [];
 }
 
+// Filter by author when clicking author name
+function filterByAuthor(author) {
+    currentAuthorFilter = author;
+    updateAuthorFilterUI();
+    refresh();
+}
+
+function clearAuthorFilter() {
+    currentAuthorFilter = null;
+    updateAuthorFilterUI();
+    refresh();
+}
+
+function updateAuthorFilterUI() {
+    const indicator = document.getElementById('authorFilterIndicator');
+    if (!indicator) return;
+    if (currentAuthorFilter) {
+        indicator.style.display = 'flex';
+        indicator.querySelector('.author-filter-name').textContent = currentAuthorFilter;
+    } else {
+        indicator.style.display = 'none';
+    }
+}
+
 // Filter books by search term (title, author, coleccion)
 function filterBooks(searchTerm) {
-    const books = getFilteredByUser();
+    let books = getFilteredByUser();
+
+    if (currentAuthorFilter) {
+        books = books.filter(book =>
+            book.Author && book.Author === currentAuthorFilter
+        );
+    }
+
     const term = searchTerm.toLowerCase().trim();
     if (!term) return books;
 
@@ -203,7 +235,7 @@ function renderBooks(books) {
 
     // Update stats
     let stats = `${books.length} libro${books.length !== 1 ? 's' : ''}`;
-    if (overdue > 0) stats += ` \u00b7 ${overdue} vencido${overdue !== 1 ? 's' : ''}`;
+    if (overdue > 0) stats += ` \u00b7 ${overdue} devuelto${overdue !== 1 ? 's' : ''}`;
     if (dueSoon > 0) stats += ` \u00b7 ${dueSoon} proximo${dueSoon !== 1 ? 's' : ''} a vencer`;
     statsText.textContent = stats;
 
