@@ -9,6 +9,7 @@ let allBooks = [];
 let currentSort = { field: 'FirstSeen', asc: true };
 let currentUserFilter = 'all';
 let currentAuthorFilter = null;
+let hideDevuelto = false;
 let activeUserCount = 0;
 
 // Format date to Spanish locale
@@ -185,6 +186,16 @@ function updateAuthorFilterUI() {
     }
 }
 
+// Toggle devuelto filter
+function toggleDevuelto() {
+    hideDevuelto = !hideDevuelto;
+    const btn = document.getElementById('devueltoToggle');
+    if (btn) {
+        btn.classList.toggle('active', hideDevuelto);
+    }
+    refresh();
+}
+
 // Filter books by search term (title, author, coleccion)
 function filterBooks(searchTerm) {
     let books = getFilteredByUser();
@@ -193,6 +204,13 @@ function filterBooks(searchTerm) {
         books = books.filter(book =>
             book.Author && book.Author === currentAuthorFilter
         );
+    }
+
+    if (hideDevuelto) {
+        books = books.filter(book => {
+            const daysUntil = getDaysUntil(book.DueDate);
+            return daysUntil === null || daysUntil >= 0;
+        });
     }
 
     const term = searchTerm.toLowerCase().trim();
