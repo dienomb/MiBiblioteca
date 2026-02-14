@@ -327,6 +327,48 @@ header h1 {
     color: var(--accent);
     font-weight: 600;
     margin-bottom: 0.2rem;
+    cursor: pointer;
+}
+
+.author-link {
+    transition: color 0.2s ease;
+    border-bottom: 1px dashed transparent;
+}
+
+.book-author:hover .author-link {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Author filter indicator */
+.author-filter-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1.2rem;
+    margin-bottom: 1rem;
+    background: #f3f0ff;
+    border: 2px solid var(--accent-light);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--accent);
+}
+
+.author-filter-clear {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.82rem;
+    font-family: inherit;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.author-filter-clear:hover {
+    background: var(--accent-light);
 }
 
 .book-coleccion {
