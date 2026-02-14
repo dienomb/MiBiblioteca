@@ -48,6 +48,11 @@
                 <button class="sort-btn" data-sort="DueDate">⏰ Vencimiento<span class="sort-arrow"></span></button>
             </div>
 
+            <div class="filter-section">
+                <span class="sort-label">Filtrar:</span>
+                <button id="devueltoToggle" class="filter-toggle-btn" onclick="toggleDevuelto()">Ocultar devueltos</button>
+            </div>
+
             <div id="authorFilterIndicator" class="author-filter-indicator" style="display:none">
                 <span>✍️ Filtrando por: <strong class="author-filter-name"></strong></span>
                 <button class="author-filter-clear" onclick="clearAuthorFilter()">✕ Quitar filtro</button>
