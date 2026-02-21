@@ -30,7 +30,24 @@ jobs:
       - name: Build scraper
         run: dotnet build src/Scraper/Scraper.csproj --configuration Release --no-restore
 
-      - name: Install Playwright browsers
+      - name: Get Playwright Version
+        shell: pwsh
+        run: |
+          [xml]$csproj = Get-Content "src/Scraper/Scraper.csproj"
+          $version = $csproj.Project.ItemGroup.PackageReference |
+            Where-Object { $_.Include -eq "Microsoft.Playwright" } |
+            Select-Object -ExpandProperty Version
+          echo "PlaywrightVersion=$version" >> $env:GITHUB_ENV
+
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PlaywrightVersion }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pwsh src/Scraper/bin/Release/net10.0/playwright.ps1 install chromium --with-deps
 
       - name: Run scraper
