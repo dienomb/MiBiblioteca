@@ -132,7 +132,6 @@ public class MadridLibraryScraper
 
         var bookItems = page.Locator("ol.lector_box.js-lector_box > li[id^='lector_box']");
         var bookCount = await bookItems.CountAsync();
-        var books = new List<Book>(bookCount);
 
         // First pass: collect title, due date, and detail page href
         var bookData = new List<(string Title, DateTime? DueDate, string? Href)>();
@@ -152,87 +151,100 @@ public class MadridLibraryScraper
             bookData.Add((titleText ?? string.Empty, ParseDueDate(dueText), href));
         }
 
-        // Second pass: visit each detail page to get author, coleccion and image
-        foreach (var (title, dueDate, href) in bookData)
-        {
-            string? author = null;
-            string? coleccion = null;
-            string? imageUrl = null;
-            if (!string.IsNullOrEmpty(href))
+        // Second pass: visit detail pages concurrently to get author, coleccion and image
+        var baseUrl = page.Url;
+        var bookResults = new Book[bookData.Count];
+
+        await Parallel.ForEachAsync(
+            Enumerable.Range(0, bookData.Count),
+            new ParallelOptions { MaxDegreeOfParallelism = 3 },
+            async (i, ct) =>
             {
-                try
+                var (title, dueDate, href) = bookData[i];
+                string? author = null;
+                string? coleccion = null;
+                string? imageUrl = null;
+
+                if (!string.IsNullOrEmpty(href))
                 {
-                    var detailUrl = href.StartsWith("http")
-                        ? href
-                        : new Uri(new Uri(page.Url), href).ToString();
-                    await page.GotoAsync(detailUrl, new() { WaitUntil = WaitUntilState.DOMContentLoaded });
-                    await page.Locator("p.doc_author").First.WaitForAsync(new() { Timeout = 10000 });
-                    author = (await page.Locator("p.doc_author a").First.TextContentAsync())?.Trim();
-
-                    // Find the dd element next to dt containing "Colección"
-                    var coleccionDd = page.Locator("div.doc_data dl dt:has-text('Colección') + dd");
-                    if (await coleccionDd.CountAsync() > 0)
+                    var detailPage = await context.NewPageAsync();
+                    try
                     {
-                        coleccion = (await coleccionDd.First.TextContentAsync())?.Trim();
-                    }
+                        var detailUrl = href.StartsWith("http")
+                            ? href
+                            : new Uri(new Uri(baseUrl), href).ToString();
+                        await detailPage.GotoAsync(detailUrl, new() { WaitUntil = WaitUntilState.DOMContentLoaded });
+                        await detailPage.Locator("p.doc_author").First.WaitForAsync(new() { Timeout = 10000 });
+                        author = (await detailPage.Locator("p.doc_author a").First.TextContentAsync())?.Trim();
 
-                    // Download book cover image to local file
-                    var img = page.Locator("div.doc_img img");
-                    if (await img.CountAsync() > 0)
-                    {
-                        var src = await img.First.GetAttributeAsync("src");
-                        if (!string.IsNullOrEmpty(src))
+                        // Find the dd element next to dt containing "Colección"
+                        var coleccionDd = detailPage.Locator("div.doc_data dl dt:has-text('Colección') + dd");
+                        if (await coleccionDd.CountAsync() > 0)
                         {
-                            var fullUrl = src.StartsWith("http")
-                                ? src
-                                : new Uri(new Uri(page.Url), src).ToString();
-                            try
+                            coleccion = (await coleccionDd.First.TextContentAsync())?.Trim();
+                        }
+
+                        // Download book cover image to local file
+                        var img = detailPage.Locator("div.doc_img img");
+                        if (await img.CountAsync() > 0)
+                        {
+                            var src = await img.First.GetAttributeAsync("src");
+                            if (!string.IsNullOrEmpty(src))
                             {
-                                var slug = Slugify(title);
-                                var fileName = $"{slug}.jpg";
-                                var filePath = Path.Combine(coversDir, fileName);
-                                if (File.Exists(filePath))
+                                var fullUrl = src.StartsWith("http")
+                                    ? src
+                                    : new Uri(new Uri(detailPage.Url), src).ToString();
+                                try
                                 {
-                                    imageUrl = $"{Path.GetFileName(coversDir)}/{fileName}";
-                                    Console.WriteLine($"  Cover already exists for '{title}', skipping download");
-                                }
-                                else
-                                {
-                                    var response = await page.APIRequest.GetAsync(fullUrl);
-                                    if (response.Ok)
+                                    var slug = Slugify(title);
+                                    var fileName = $"{slug}.jpg";
+                                    var filePath = Path.Combine(coversDir, fileName);
+                                    if (File.Exists(filePath))
                                     {
-                                        var imgBytes = await response.BodyAsync();
-                                        await File.WriteAllBytesAsync(filePath, imgBytes);
                                         imageUrl = $"{Path.GetFileName(coversDir)}/{fileName}";
-                                        Console.WriteLine($"  Saved cover for '{title}'");
+                                        Console.WriteLine($"  Cover already exists for '{title}', skipping download");
+                                    }
+                                    else
+                                    {
+                                        var response = await detailPage.APIRequest.GetAsync(fullUrl);
+                                        if (response.Ok)
+                                        {
+                                            var imgBytes = await response.BodyAsync();
+                                            await File.WriteAllBytesAsync(filePath, imgBytes);
+                                            imageUrl = $"{Path.GetFileName(coversDir)}/{fileName}";
+                                            Console.WriteLine($"  Saved cover for '{title}'");
+                                        }
                                     }
                                 }
-                            }
-                            catch (Exception imgEx)
-                            {
-                                Console.Error.WriteLine($"  Could not download cover for '{title}': {imgEx.Message}");
+                                catch (Exception imgEx)
+                                {
+                                    Console.Error.WriteLine($"  Could not download cover for '{title}': {imgEx.Message}");
+                                }
                             }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"  Could not fetch details for '{title}': {ex.Message}");
+                    }
+                    finally
+                    {
+                        await detailPage.CloseAsync();
+                    }
                 }
-                catch (Exception ex)
+
+                bookResults[i] = new Book
                 {
-                    Console.Error.WriteLine($"  Could not fetch details for '{title}': {ex.Message}");
-                }
-            }
-
-            books.Add(new Book
-            {
-                Title = title,
-                Author = author,
-                Coleccion = coleccion,
-                ImageUrl = imageUrl,
-                DueDate = dueDate,
-                FirstSeen = DateTime.UtcNow
+                    Title = title,
+                    Author = author,
+                    Coleccion = coleccion,
+                    ImageUrl = imageUrl,
+                    DueDate = dueDate,
+                    FirstSeen = DateTime.UtcNow
+                };
             });
-        }
 
-        return books;
+        return bookResults.ToList();
     }
 
     private static async Task<List<Book>> LoadExistingBooks(string filePath)
@@ -396,12 +408,13 @@ public class MadridLibraryScraper
             Environment.Exit(1);
         }
 
-        // Scrape user 1
+        // Scrape both users concurrently
+        var tasks = new List<Task>();
+
         var dataFilePath = Path.Combine("..", "..", "data", "books.json");
         var coversDir = Path.Combine("..", "..", "data", "covers");
-        await ScrapeUser("User 1", username, password, dataFilePath, coversDir);
+        tasks.Add(ScrapeUser("User 1", username, password, dataFilePath, coversDir));
 
-        // Scrape user 2 (optional)
         var username2 = config["LibraryUsername2"] ?? Environment.GetEnvironmentVariable("LIBRARY_USERNAME_2");
         var password2 = config["LibraryPassword2"] ?? Environment.GetEnvironmentVariable("LIBRARY_PASSWORD_2");
 
@@ -409,12 +422,14 @@ public class MadridLibraryScraper
         {
             var dataFilePath2 = Path.Combine("..", "..", "data", "books2.json");
             var coversDir2 = Path.Combine("..", "..", "data", "covers2");
-            await ScrapeUser("User 2", username2, password2, dataFilePath2, coversDir2);
+            tasks.Add(ScrapeUser("User 2", username2, password2, dataFilePath2, coversDir2));
         }
         else
         {
             Console.WriteLine("\nUser 2 credentials not configured, skipping.");
         }
+
+        await Task.WhenAll(tasks);
 
         Console.WriteLine("\nSync complete!");
     }
