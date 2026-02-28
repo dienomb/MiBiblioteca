@@ -25,3 +25,6 @@ x86/
 local.settings.json
 .env
 appsettings.json
+
+# Generated at deploy time — contains secrets, must never be committed
+src/Web/config.js

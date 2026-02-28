@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Biblioteca - Ejecutar Scraper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .trigger-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .trigger-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 1rem 2rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin: 1.5rem 0;
+        }
+
+        .trigger-btn:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .trigger-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .trigger-btn .spin {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-panel {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
+            text-align: left;
+        }
+
+        .status-panel.visible {
+            display: block;
+        }
+
+        .status-message {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+        }
+
+        .status-message.success { background: #d1fae5; color: #065f46; }
+        .status-message.error   { background: #fee2e2; color: #991b1b; }
+        .status-message.info    { background: #ede9fe; color: #5b21b6; }
+
+        .run-details {
+            display: none;
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 0.75rem;
+        }
+
+        .run-details.visible { display: block; }
+
+        .run-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.35rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .run-detail-row:last-child { border-bottom: none; }
+
+        .run-detail-label { font-weight: 600; color: #374151; }
+
+        .run-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .run-badge.queued      { background: #fef3c7; color: #92400e; }
+        .run-badge.in_progress { background: #dbeafe; color: #1e40af; }
+        .run-badge.success     { background: #d1fae5; color: #065f46; }
+        .run-badge.failure     { background: #fee2e2; color: #991b1b; }
+        .run-badge.cancelled   { background: #f3f4f6; color: #374151; }
+
+        .run-link {
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .run-link:hover { text-decoration: underline; }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+
+        .description {
+            color: #6b7280;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0.5rem 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-deco">
+                <span class="deco-book">⚙️</span>
+                <span class="deco-book">📚</span>
+                <span class="deco-book">⚙️</span>
+            </div>
+            <h1>Ejecutar Scraper</h1>
+            <p class="subtitle">Biblioteca Publica de Madrid</p>
+        </header>
+
+        <main>
+            <div class="trigger-container">
+                <p class="description">
+                    Activa el scraper manualmente para actualizar tu lista de libros ahora,
+                    sin esperar al ciclo automatico del domingo.
+                </p>
+
+                <button id="triggerBtn" class="trigger-btn" onclick="triggerScrape()">
+                    <span id="btnIcon">🔄</span>
+                    <span id="btnText">Ejecutar scraper ahora</span>
+                </button>
+
+                <div id="statusPanel" class="status-panel">
+                    <div id="statusMessage" class="status-message info"></div>
+                    <div id="runDetails" class="run-details">
+                        <div class="run-detail-row">
+                            <span class="run-detail-label">Estado</span>
+                            <span id="runStatus">—</span>
+                        </div>
+                        <div class="run-detail-row">
+                            <span class="run-detail-label">Iniciado</span>
+                            <span id="runStarted">—</span>
+                        </div>
+                        <div class="run-detail-row">
+                            <span class="run-detail-label">Duracion</span>
+                            <span id="runDuration">—</span>
+                        </div>
+                        <div class="run-detail-row">
+                            <span class="run-detail-label">Enlace</span>
+                            <span id="runLink">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <a href="index.html" class="back-link">← Volver a Mi Biblioteca</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                Actualizado automaticamente cada domingo a las 8:00 AM
+                <br>
+                <a href="https://github.com/dienomb/MiBiblioteca" target="_blank" rel="noopener">
+                    Ver codigo en GitHub
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="trigger.js"></script>
+</body>
+</html>
