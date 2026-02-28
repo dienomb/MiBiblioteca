@@ -19,8 +19,10 @@ async function triggerScrape() {
     showStatus('Enviando solicitud al scraper...', 'info');
 
     try {
+        // Uses repository_dispatch (requires contents:write) instead of
+        // workflow_dispatch (requires actions:write) for broader token compatibility.
         const res = await fetch(
-            `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+            `https://api.github.com/repos/${REPO}/dispatches`,
             {
                 method: 'POST',
                 headers: {
@@ -28,7 +30,7 @@ async function triggerScrape() {
                     'Accept': 'application/vnd.github+json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ref: 'main' }),
+                body: JSON.stringify({ event_type: 'trigger-scrape' }),
             }
         );
 
@@ -42,7 +44,7 @@ async function triggerScrape() {
             const msg = res.status === 401
                 ? 'Token invalido (401). El despliegue puede necesitar actualizarse.'
                 : res.status === 403
-                ? 'Permisos insuficientes (403). El token necesita scope de Actions.'
+                ? 'Permisos insuficientes (403). El token necesita scope contents:write.'
                 : `Error ${res.status}: ${body}`;
             showStatus(msg, 'error');
             resetBtn();
