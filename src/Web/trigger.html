@@ -52,74 +52,6 @@
             to { transform: rotate(360deg); }
         }
 
-        .status-panel {
-            display: none;
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
-            text-align: left;
-        }
-
-        .status-panel.visible {
-            display: block;
-        }
-
-        .status-message {
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-        }
-
-        .status-message.success { background: #d1fae5; color: #065f46; }
-        .status-message.error   { background: #fee2e2; color: #991b1b; }
-        .status-message.info    { background: #ede9fe; color: #5b21b6; }
-
-        .run-details {
-            display: none;
-            font-size: 0.9rem;
-            color: #555;
-            margin-top: 0.75rem;
-        }
-
-        .run-details.visible { display: block; }
-
-        .run-detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.35rem 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .run-detail-row:last-child { border-bottom: none; }
-
-        .run-detail-label { font-weight: 600; color: #374151; }
-
-        .run-badge {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .run-badge.queued      { background: #fef3c7; color: #92400e; }
-        .run-badge.in_progress { background: #dbeafe; color: #1e40af; }
-        .run-badge.success     { background: #d1fae5; color: #065f46; }
-        .run-badge.failure     { background: #fee2e2; color: #991b1b; }
-        .run-badge.cancelled   { background: #f3f4f6; color: #374151; }
-
-        .run-link {
-            color: #7c3aed;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .run-link:hover { text-decoration: underline; }
-
         .back-link {
             display: inline-block;
             margin-top: 2rem;
@@ -156,34 +88,13 @@
                 <p class="description">
                     Activa el scraper manualmente para actualizar tu lista de libros ahora,
                     sin esperar al ciclo automatico del domingo.
+                    Se abrira GitHub Actions donde podras ejecutarlo con tu cuenta.
                 </p>
 
                 <button id="triggerBtn" class="trigger-btn" onclick="triggerScrape()">
                     <span id="btnIcon">🔄</span>
-                    <span id="btnText">Ejecutar scraper ahora</span>
+                    <span id="btnText">Ejecutar scraper en GitHub</span>
                 </button>
-
-                <div id="statusPanel" class="status-panel">
-                    <div id="statusMessage" class="status-message info"></div>
-                    <div id="runDetails" class="run-details">
-                        <div class="run-detail-row">
-                            <span class="run-detail-label">Estado</span>
-                            <span id="runStatus">—</span>
-                        </div>
-                        <div class="run-detail-row">
-                            <span class="run-detail-label">Iniciado</span>
-                            <span id="runStarted">—</span>
-                        </div>
-                        <div class="run-detail-row">
-                            <span class="run-detail-label">Duracion</span>
-                            <span id="runDuration">—</span>
-                        </div>
-                        <div class="run-detail-row">
-                            <span class="run-detail-label">Enlace</span>
-                            <span id="runLink">—</span>
-                        </div>
-                    </div>
-                </div>
 
                 <br>
                 <a href="index.html" class="back-link">← Volver a Mi Biblioteca</a>
@@ -201,7 +112,6 @@
         </footer>
     </div>
 
-    <script src="config.js"></script>
     <script src="trigger.js"></script>
 </body>
 </html>
