@@ -33,9 +33,6 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Inject trigger config
-        run: printf 'const TRIGGER_TOKEN="%s";\n' "${{ secrets.ADMIN_TOKEN }}" > src/Web/config.js
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
