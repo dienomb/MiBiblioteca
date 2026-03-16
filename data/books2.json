@@ -54,5 +54,37 @@
     "ImageUrl": "covers2/misterio-en-la-estacion-espacial.jpg",
     "DueDate": "2026-04-13T00:00:00",
     "FirstSeen": "2026-03-12T15:53:10.8224301Z"
+  },
+  {
+    "Title": "¿Quién sabe liberar a un dragón?",
+    "Author": "Sánchez Ibarzábal, Paloma (1964-)",
+    "Coleccion": "El Barco de Vapor. Serie azul ; 138",
+    "ImageUrl": "covers2/quien-sabe-liberar-a-un-dragon.jpg",
+    "DueDate": "2026-04-15T00:00:00",
+    "FirstSeen": "2026-03-16T20:40:12.5856286Z"
+  },
+  {
+    "Title": "La batalla del Ragnarök",
+    "Author": "Tordensson, Erik (1984-)",
+    "Coleccion": "Las aventuras de Thor ; 3",
+    "ImageUrl": "covers2/la-batalla-del-ragnarok.jpg",
+    "DueDate": "2026-04-15T00:00:00",
+    "FirstSeen": "2026-03-16T20:40:13.0032435Z"
+  },
+  {
+    "Title": "Criando malvas",
+    "Author": "Costas, Ledicia (1979-)",
+    "Coleccion": "Los Minimuertos ; 2",
+    "ImageUrl": "covers2/criando-malvas.jpg",
+    "DueDate": "2026-04-15T00:00:00",
+    "FirstSeen": "2026-03-16T20:40:16.9154074Z"
+  },
+  {
+    "Title": "Robar está fatal",
+    "Author": "El Hematocrítico (1976-2023)",
+    "Coleccion": "Max Burbuja ; 2",
+    "ImageUrl": "covers2/robar-esta-fatal.jpg",
+    "DueDate": "2026-04-15T00:00:00",
+    "FirstSeen": "2026-03-16T20:40:17.140363Z"
   }
 ]
