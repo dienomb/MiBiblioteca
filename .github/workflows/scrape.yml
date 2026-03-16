@@ -19,7 +19,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.ADMIN_TOKEN }}
+          # Use admin token when available, otherwise fall back to GITHUB_TOKEN
+          token: ${{ secrets.ADMIN_TOKEN || github.token }}
+          persist-credentials: true
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -63,25 +65,39 @@ jobs:
 
       - name: Commit and push changes
         env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
           GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
+          # Ensure git push is authenticated even when credential helpers are unavailable
+          if [ -n "$ADMIN_TOKEN" ]; then
+            git remote set-url origin "https://x-access-token:${ADMIN_TOKEN}@github.com/${{ github.repository }}.git"
+          fi
+
           git add data/books.json data/covers/ data/books2.json data/covers2/
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
           git commit -m "chore: update books data [skip ci]"
-          # Temporarily bypass admin enforcement for automated data push
-          gh api --method DELETE \
-            "repos/${{ github.repository }}/branches/main/protection/enforce_admins" \
-            2>/dev/null || true
+
+          # Temporarily bypass admin enforcement only when admin token is configured
+          if [ -n "$ADMIN_TOKEN" ]; then
+            gh api --method DELETE \
+              "repos/${{ github.repository }}/branches/main/protection/enforce_admins" \
+              2>/dev/null || true
+          fi
+
           git push
+
           # Restore admin enforcement
-          gh api --method POST \
-            "repos/${{ github.repository }}/branches/main/protection/enforce_admins" \
-            2>/dev/null || true
+          if [ -n "$ADMIN_TOKEN" ]; then
+            gh api --method POST \
+              "repos/${{ github.repository }}/branches/main/protection/enforce_admins" \
+              2>/dev/null || true
+          fi
 
       - name: Upload logs on failure
         if: failure()
