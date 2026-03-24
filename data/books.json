@@ -94,5 +94,37 @@
     "ImageUrl": "covers/lo-que-escucho-la-mariquita.jpg",
     "DueDate": "2026-03-13T00:00:00",
     "FirstSeen": "2026-02-11T22:54:58.1677723Z"
+  },
+  {
+    "Title": "La zampa pantallas",
+    "Author": "Docherty, Helen",
+    "Coleccion": "Maeva Young",
+    "ImageUrl": "covers/la-zampa-pantallas.jpg",
+    "DueDate": "2026-04-23T00:00:00",
+    "FirstSeen": "2026-03-24T19:06:39.7275782Z"
+  },
+  {
+    "Title": "Grimwood : el ataque del monstruo fétido",
+    "Author": "Shireen, Nadia",
+    "Coleccion": "Bienvenidos a Grimwood ; 3",
+    "ImageUrl": "covers/grimwood-el-ataque-del-monstruo-fetido.jpg",
+    "DueDate": "2026-04-23T00:00:00",
+    "FirstSeen": "2026-03-24T19:06:39.8682656Z"
+  },
+  {
+    "Title": "El colegio de los animales mágicos",
+    "Author": "Auer, Margit",
+    "Coleccion": "El colegio de los animales mágicos ; 1",
+    "ImageUrl": "covers/el-colegio-de-los-animales-magicos.jpg",
+    "DueDate": "2026-04-23T00:00:00",
+    "FirstSeen": "2026-03-24T19:06:46.7284615Z"
+  },
+  {
+    "Title": "Charlie y la fábrica de chocolate",
+    "Author": "Dahl, Roald (1916-1990)",
+    "Coleccion": "Alfaguara juvenil",
+    "ImageUrl": "covers/charlie-y-la-fabrica-de-chocolate.jpg",
+    "DueDate": "2026-04-23T00:00:00",
+    "FirstSeen": "2026-03-24T19:06:46.9521831Z"
   }
 ]
