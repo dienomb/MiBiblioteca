@@ -52,7 +52,7 @@
     "Author": "Blanch, Teresa (1969-)",
     "Coleccion": "Tú eres el detective con Los Buscapistas ; 6",
     "ImageUrl": "covers2/misterio-en-la-estacion-espacial.jpg",
-    "DueDate": "2026-04-28T00:00:00",
+    "DueDate": "2026-05-27T00:00:00",
     "FirstSeen": "2026-03-12T15:53:10.8224301Z"
   },
   {
@@ -94,5 +94,37 @@
     "ImageUrl": "covers2/el-cerdito-de-navidad.jpg",
     "DueDate": "2026-05-08T00:00:00",
     "FirstSeen": "2026-03-24T19:06:53.1183421Z"
+  },
+  {
+    "Title": "¡Mejores amigos al rescate!",
+    "Author": "Do, Anh (1977-)",
+    "Coleccion": "Las aventuras de Hot Dog ; 1",
+    "ImageUrl": "covers2/mejores-amigos-al-rescate.jpg",
+    "DueDate": "2026-05-27T00:00:00",
+    "FirstSeen": "2026-05-03T09:10:35.5021967Z"
+  },
+  {
+    "Title": "Viaje al centro de la Tierra",
+    "Author": "Green, Shia",
+    "Coleccion": null,
+    "ImageUrl": "covers2/viaje-al-centro-de-la-tierra.jpg",
+    "DueDate": "2026-05-27T00:00:00",
+    "FirstSeen": "2026-05-03T09:10:35.6318253Z"
+  },
+  {
+    "Title": "La elefanta que vino a cenar",
+    "Author": "Smallman, Steve",
+    "Coleccion": "La ovejita que vino a cenar ; 7",
+    "ImageUrl": "covers2/la-elefanta-que-vino-a-cenar.jpg",
+    "DueDate": "2026-05-27T00:00:00",
+    "FirstSeen": "2026-05-03T09:10:40.1981013Z"
+  },
+  {
+    "Title": "Dante, el valiente",
+    "Author": "Andreae, Giles (1966-)",
+    "Coleccion": null,
+    "ImageUrl": "covers2/dante-el-valiente.jpg",
+    "DueDate": "2026-05-27T00:00:00",
+    "FirstSeen": "2026-05-03T09:10:43.0593052Z"
   }
 ]
