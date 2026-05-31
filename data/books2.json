@@ -108,7 +108,7 @@
     "Author": "Green, Shia",
     "Coleccion": null,
     "ImageUrl": "covers2/viaje-al-centro-de-la-tierra.jpg",
-    "DueDate": "2026-05-27T00:00:00",
+    "DueDate": "2026-06-11T00:00:00",
     "FirstSeen": "2026-05-03T09:10:35.6318253Z"
   },
   {
@@ -116,7 +116,7 @@
     "Author": "Smallman, Steve",
     "Coleccion": "La ovejita que vino a cenar ; 7",
     "ImageUrl": "covers2/la-elefanta-que-vino-a-cenar.jpg",
-    "DueDate": "2026-05-27T00:00:00",
+    "DueDate": "2026-06-11T00:00:00",
     "FirstSeen": "2026-05-03T09:10:40.1981013Z"
   },
   {
@@ -124,7 +124,15 @@
     "Author": "Andreae, Giles (1966-)",
     "Coleccion": null,
     "ImageUrl": "covers2/dante-el-valiente.jpg",
-    "DueDate": "2026-05-27T00:00:00",
+    "DueDate": "2026-06-11T00:00:00",
     "FirstSeen": "2026-05-03T09:10:43.0593052Z"
+  },
+  {
+    "Title": "Policán",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "Policán ; \n1",
+    "ImageUrl": "covers2/polican.jpg",
+    "DueDate": "2026-06-25T00:00:00",
+    "FirstSeen": "2026-05-31T10:05:55.2253837Z"
   }
 ]
