@@ -134,5 +134,37 @@
     "ImageUrl": "covers2/polican.jpg",
     "DueDate": "2026-06-25T00:00:00",
     "FirstSeen": "2026-05-31T10:05:55.2253837Z"
+  },
+  {
+    "Title": "A propósito",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "El Club de Cómic de Chikigato ; 3",
+    "ImageUrl": "covers2/a-proposito.jpg",
+    "DueDate": "2026-07-01T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:51.4143198Z"
+  },
+  {
+    "Title": "Policán y Chikigato",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "Policán ; 4",
+    "ImageUrl": "covers2/polican-y-chikigato.jpg",
+    "DueDate": "2026-07-01T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:52.4775186Z"
+  },
+  {
+    "Title": "¡Están locos estos marcianos! ; Aventura en el centro comerc",
+    "Author": "Veiga, Ramón D. (1970-)",
+    "Coleccion": "Fani & SuperDani ; 3, 4",
+    "ImageUrl": "covers2/estan-locos-estos-marcianos-aventura-en-el-centro-comerc.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:58.0436941Z"
+  },
+  {
+    "Title": "¡Gracias, monstruos!",
+    "Author": "Didier, Anne (1969-)",
+    "Coleccion": "Emilio y Margot ; \n4",
+    "ImageUrl": "covers2/gracias-monstruos.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:58.3949699Z"
   }
 ]

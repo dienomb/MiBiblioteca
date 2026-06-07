@@ -142,5 +142,53 @@
     "ImageUrl": "covers/historia-de-dos-mininos.jpg",
     "DueDate": "2026-06-25T00:00:00",
     "FirstSeen": "2026-05-31T10:05:46.8436937Z"
+  },
+  {
+    "Title": "¡Bienvenidos a la fiesta!",
+    "Author": "Do, Anh (1977-)",
+    "Coleccion": "Las aventuras de Hot Dog ; 2",
+    "ImageUrl": "covers/bienvenidos-a-la-fiesta.jpg",
+    "DueDate": "2026-07-01T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:43.8670187Z"
+  },
+  {
+    "Title": "Los defensores de Muskrat City",
+    "Author": "Stilton, Geronimo",
+    "Coleccion": "Superhéroes Geronimo Stilton ; 1",
+    "ImageUrl": "covers/los-defensores-de-muskrat-city.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:44.0467636Z"
+  },
+  {
+    "Title": "¡Quiero bailar!",
+    "Author": "Reeves, Josette",
+    "Coleccion": null,
+    "ImageUrl": "covers/quiero-bailar.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:48.0203895Z"
+  },
+  {
+    "Title": "Sin limites",
+    "Author": "Santiago, Roberto (1968-)",
+    "Coleccion": "Super Héroes. Escuadrón K ; 1",
+    "ImageUrl": "covers/sin-limites.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:18:52.3508174Z"
+  },
+  {
+    "Title": "¡Cuidadito con el bebé!",
+    "Author": "Puttock, Simon (1964-)",
+    "Coleccion": "Cubilete",
+    "ImageUrl": "covers/cuidadito-con-el-bebe.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:19:00.2004796Z"
+  },
+  {
+    "Title": "El señor de las pulgas",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "Policán ; \n5",
+    "ImageUrl": "covers/el-senor-de-las-pulgas.jpg",
+    "DueDate": "2026-07-02T00:00:00",
+    "FirstSeen": "2026-06-07T10:19:00.7670009Z"
   }
 ]
