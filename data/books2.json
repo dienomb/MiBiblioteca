@@ -166,5 +166,37 @@
     "ImageUrl": "covers2/gracias-monstruos.jpg",
     "DueDate": "2026-07-02T00:00:00",
     "FirstSeen": "2026-06-07T10:18:58.3949699Z"
+  },
+  {
+    "Title": "Lo quiero todo",
+    "Author": "Moreno, Eloy (1976-)",
+    "Coleccion": "Cuentos para contar entre dos",
+    "ImageUrl": "covers2/lo-quiero-todo.jpg",
+    "DueDate": "2026-07-09T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:46.3875727Z"
+  },
+  {
+    "Title": "La camada de los salvajes",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "Policán ; 6",
+    "ImageUrl": "covers2/la-camada-de-los-salvajes.jpg",
+    "DueDate": "2026-07-09T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:46.5828267Z"
+  },
+  {
+    "Title": "El pestazo escarlata",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "Policán ; 12",
+    "ImageUrl": "covers2/el-pestazo-escarlata.jpg",
+    "DueDate": "2026-07-09T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:59.4126512Z"
+  },
+  {
+    "Title": "Prohibido a los monstruos",
+    "Author": "Didier, Anne (1969-)",
+    "Coleccion": "Emilio y Margot ; 1",
+    "ImageUrl": "covers2/prohibido-a-los-monstruos.jpg",
+    "DueDate": "2026-07-13T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:59.6084317Z"
   }
 ]

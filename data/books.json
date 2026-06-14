@@ -190,5 +190,29 @@
     "ImageUrl": "covers/el-senor-de-las-pulgas.jpg",
     "DueDate": "2026-07-02T00:00:00",
     "FirstSeen": "2026-06-07T10:19:00.7670009Z"
+  },
+  {
+    "Title": "Las jirafas no pueden bailar",
+    "Author": "Andreae, Giles (1966-)",
+    "Coleccion": null,
+    "ImageUrl": "covers/las-jirafas-no-pueden-bailar.jpg",
+    "DueDate": "2026-07-09T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:52.0613411Z"
+  },
+  {
+    "Title": "Osoblanco",
+    "Author": "Lunde, Maja (1975-)",
+    "Coleccion": null,
+    "ImageUrl": "covers/osoblanco.jpg",
+    "DueDate": "2026-07-13T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:53.1282964Z"
+  },
+  {
+    "Title": "A la fuga con Pippi",
+    "Author": "Lindgren, Astrid (1907-2002)",
+    "Coleccion": null,
+    "ImageUrl": "covers/a-la-fuga-con-pippi.jpg",
+    "DueDate": "2026-07-13T00:00:00",
+    "FirstSeen": "2026-06-14T10:41:53.2426682Z"
   }
 ]
