@@ -198,5 +198,37 @@
     "ImageUrl": "covers2/prohibido-a-los-monstruos.jpg",
     "DueDate": "2026-07-13T00:00:00",
     "FirstSeen": "2026-06-14T10:41:59.6084317Z"
+  },
+  {
+    "Title": "Atrapa 22",
+    "Author": "Pilkey, Dav (1966-)",
+    "Coleccion": "Policán ; 8",
+    "ImageUrl": "covers2/atrapa-22.jpg",
+    "DueDate": "2026-07-30T00:00:00",
+    "FirstSeen": "2026-07-05T10:01:18.2934165Z"
+  },
+  {
+    "Title": "Dani quiere ser superhéroe ; Contra el caracol mutante",
+    "Author": "Veiga, Ramón D. (1970-)",
+    "Coleccion": "Fani & Superdani ; 1 , 2",
+    "ImageUrl": "covers2/dani-quiere-ser-superheroe-contra-el-caracol-mutante.jpg",
+    "DueDate": "2026-07-30T00:00:00",
+    "FirstSeen": "2026-07-05T10:01:18.4960213Z"
+  },
+  {
+    "Title": "La maldición del barco fantasma",
+    "Author": "Magaziner, Lauren",
+    "Coleccion": "¡Resuelve el misterio! ; 5",
+    "ImageUrl": "covers2/la-maldicion-del-barco-fantasma.jpg",
+    "DueDate": "2026-07-30T00:00:00",
+    "FirstSeen": "2026-07-05T10:01:22.1813166Z"
+  },
+  {
+    "Title": "¡Qué animal será el ideal!",
+    "Author": "Geisel, Theodor Seuss (1904-1991)",
+    "Coleccion": "Dr. Seuss ; 6",
+    "ImageUrl": "covers2/que-animal-sera-el-ideal.jpg",
+    "DueDate": "2026-07-30T00:00:00",
+    "FirstSeen": "2026-07-05T10:01:22.7751994Z"
   }
 ]
