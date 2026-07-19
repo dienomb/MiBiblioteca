@@ -246,5 +246,13 @@
     "ImageUrl": "covers/la-liebre-con-la-nariz-roja.jpg",
     "DueDate": "2026-07-30T00:00:00",
     "FirstSeen": "2026-07-05T10:01:21.5046827Z"
+  },
+  {
+    "Title": "El Ickabog",
+    "Author": "Rowling, J. K. (1965-)",
+    "Coleccion": null,
+    "ImageUrl": "covers/el-ickabog.jpg",
+    "DueDate": "2026-08-17T00:00:00",
+    "FirstSeen": "2026-07-19T09:41:01.8096803Z"
   }
 ]
