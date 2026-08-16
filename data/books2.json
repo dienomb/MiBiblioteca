@@ -230,5 +230,45 @@
     "ImageUrl": "covers2/que-animal-sera-el-ideal.jpg",
     "DueDate": "2026-08-14T00:00:00",
     "FirstSeen": "2026-07-05T10:01:22.7751994Z"
+  },
+  {
+    "Title": "El joven Sherlock Tópez en la gruta de los murciélagos",
+    "Author": null,
+    "Coleccion": null,
+    "ImageUrl": null,
+    "DueDate": "2026-09-09T00:00:00",
+    "FirstSeen": "2026-08-16T08:14:01.7477749Z"
+  },
+  {
+    "Title": "Misterio a través del tiempo",
+    "Author": "Bartual, Manuel (1979-)",
+    "Coleccion": "Erwin el gato cuántico ; 1",
+    "ImageUrl": "covers2/misterio-a-traves-del-tiempo.jpg",
+    "DueDate": "2026-09-09T00:00:00",
+    "FirstSeen": "2026-08-16T08:14:02.9520612Z"
+  },
+  {
+    "Title": "Animalotes",
+    "Author": "Blabey, Aaron (1974-)",
+    "Coleccion": null,
+    "ImageUrl": "covers2/animalotes.jpg",
+    "DueDate": "2026-09-09T00:00:00",
+    "FirstSeen": "2026-08-16T08:14:03.0831747Z"
+  },
+  {
+    "Title": "La gran ballena",
+    "Author": "Davies, Benji (1980-)",
+    "Coleccion": "La ballena",
+    "ImageUrl": "covers2/la-gran-ballena.jpg",
+    "DueDate": "2026-09-09T00:00:00",
+    "FirstSeen": "2026-08-16T08:14:08.7803249Z"
+  },
+  {
+    "Title": "El gatito de siete colores",
+    "Author": "Gómez, José Manuel (Gómez Rodríguez)",
+    "Coleccion": null,
+    "ImageUrl": "covers2/el-gatito-de-siete-colores.jpg",
+    "DueDate": "2026-09-09T00:00:00",
+    "FirstSeen": "2026-08-16T08:14:10.3314027Z"
   }
 ]
