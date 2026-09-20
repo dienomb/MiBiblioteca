@@ -270,5 +270,45 @@
     "ImageUrl": "covers2/el-gatito-de-siete-colores.jpg",
     "DueDate": "2026-09-24T00:00:00",
     "FirstSeen": "2026-08-16T08:14:10.3314027Z"
+  },
+  {
+    "Title": "Minicuentos de vacas y jirafas para ir a dormir",
+    "Author": "Blanca Bk (1974-)",
+    "Coleccion": "Minicuentos",
+    "ImageUrl": "covers2/minicuentos-de-vacas-y-jirafas-para-ir-a-dormir.jpg",
+    "DueDate": "2026-10-19T00:00:00",
+    "FirstSeen": "2026-09-20T10:11:01.3007491Z"
+  },
+  {
+    "Title": "La promesa de las pandas",
+    "Author": "Bright, Rachel (1979-)",
+    "Coleccion": null,
+    "ImageUrl": "covers2/la-promesa-de-las-pandas.jpg",
+    "DueDate": "2026-10-19T00:00:00",
+    "FirstSeen": "2026-09-20T10:11:01.4257301Z"
+  },
+  {
+    "Title": "Misión Olimpo",
+    "Author": "Stilton, Geronimo",
+    "Coleccion": "Geronimo Stilton. Viaje en el tiempo ; 13",
+    "ImageUrl": "covers2/mision-olimpo.jpg",
+    "DueDate": "2026-10-19T00:00:00",
+    "FirstSeen": "2026-09-20T10:11:09.4903079Z"
+  },
+  {
+    "Title": "El torneo de básquet soñado",
+    "Author": "Casamayor, Alberto",
+    "Coleccion": "Canastones ; 1",
+    "ImageUrl": "covers2/el-torneo-de-basquet-sonado.jpg",
+    "DueDate": "2026-10-19T00:00:00",
+    "FirstSeen": "2026-09-20T10:11:09.7261288Z"
+  },
+  {
+    "Title": "¡Abran paso al Destroyator!",
+    "Author": "Didier, Anne (1969-)",
+    "Coleccion": "Anatol Lapifia ; 7",
+    "ImageUrl": "covers2/abran-paso-al-destroyator.jpg",
+    "DueDate": "2026-10-19T00:00:00",
+    "FirstSeen": "2026-09-20T10:11:09.9047041Z"
   }
 ]
