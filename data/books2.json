@@ -310,5 +310,53 @@
     "ImageUrl": "covers2/abran-paso-al-destroyator.jpg",
     "DueDate": "2026-11-03T00:00:00",
     "FirstSeen": "2026-09-20T10:11:09.9047041Z"
+  },
+  {
+    "Title": "¡Récord conseguido!",
+    "Author": "Didier, Anne (1969-)",
+    "Coleccion": "Anatol\nLapifia ; 4",
+    "ImageUrl": "covers2/record-conseguido.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:19.6800968Z"
+  },
+  {
+    "Title": "Por aquí, Charlie",
+    "Author": "Levis, Caron",
+    "Coleccion": null,
+    "ImageUrl": "covers2/por-aqui-charlie.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:19.9891463Z"
+  },
+  {
+    "Title": "Un hogar para el pequeño lobo",
+    "Author": "Langreuter, Jutta",
+    "Coleccion": null,
+    "ImageUrl": "covers2/un-hogar-para-el-pequeno-lobo.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:23.9821885Z"
+  },
+  {
+    "Title": "El rey de las travesuras",
+    "Author": "Didier, Anne (1969-)",
+    "Coleccion": "Anatol Lapifia ; 8",
+    "ImageUrl": "covers2/el-rey-de-las-travesuras.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:28.5316697Z"
+  },
+  {
+    "Title": "Arta en la ciudad máxima",
+    "Author": "Arta (2004-)",
+    "Coleccion": "Arta ; 8",
+    "ImageUrl": "covers2/arta-en-la-ciudad-maxima.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:32.0751371Z"
+  },
+  {
+    "Title": "¡Están en todas partes!",
+    "Author": "Didier, Anne (1969-)",
+    "Coleccion": "Emilio y Margot ; 6",
+    "ImageUrl": "covers2/estan-en-todas-partes.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:32.2856283Z"
   }
 ]

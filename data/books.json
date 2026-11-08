@@ -254,5 +254,13 @@
     "ImageUrl": "covers/el-ickabog.jpg",
     "DueDate": "2026-08-17T00:00:00",
     "FirstSeen": "2026-07-19T09:41:01.8096803Z"
+  },
+  {
+    "Title": "La gran farsa de la torre del vigía",
+    "Author": "Peck, Hannah",
+    "Coleccion": "Cata tras la pista ; 3",
+    "ImageUrl": "covers/la-gran-farsa-de-la-torre-del-vigia.jpg",
+    "DueDate": "2026-12-03T00:00:00",
+    "FirstSeen": "2026-11-08T14:36:14.2148144Z"
   }
 ]
